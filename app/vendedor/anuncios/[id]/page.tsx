@@ -36,6 +36,7 @@ type AnuncioResumen = {
   vehicle_condition: string;
   usage_type: string;
   location: string;
+  papers_up_to_date: boolean;
   status: string;
   created_at: string;
 };
@@ -72,7 +73,7 @@ export default async function AnuncioCreadoPage({
       listingId: id,
       userId: user.id,
       select:
-        "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, status, created_at",
+        "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, papers_up_to_date, status, created_at",
     });
 
   const listing = listingData as AnuncioResumen | null;
@@ -144,6 +145,14 @@ export default async function AnuncioCreadoPage({
           <div className="flex justify-between gap-4">
             <dt className="text-zinc-600 dark:text-zinc-400">Ubicación</dt>
             <dd className="font-medium">{listing.location}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="text-zinc-600 dark:text-zinc-400">
+              Papeles al día
+            </dt>
+            <dd className="font-medium">
+              {listing.papers_up_to_date ? "Sí" : "No"}
+            </dd>
           </div>
         </dl>
 

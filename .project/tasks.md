@@ -98,7 +98,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-11: Campos obligatorios adicionales del anuncio
 
 - **Depende de:** T-09
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-04):** el formulario exige además estado
   del vehículo, indicación de papeles al día (sí/no) y tipo de uso
   (familiar, trabajo, carga, todo terreno, seleccionado de una lista);

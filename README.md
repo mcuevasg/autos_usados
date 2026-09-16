@@ -75,9 +75,11 @@ vendedor verificado puede publicar anuncios.
 
 Un vendedor con estado "Verificado" puede crear un anuncio en
 `/vendedor/anuncios/nuevo`, indicando marca, modelo, año, kilometraje,
-precio, estado del vehículo, tipo de uso y ubicación. El anuncio queda
-guardado en estado "borrador" y su resumen puede consultarse desde la
-página de confirmación tras crearlo.
+precio, estado del vehículo, tipo de uso, si los papeles están al día (sí/no)
+y ubicación. El campo "papeles al día" no tiene opción preseleccionada: el
+vendedor debe elegirla explícitamente para poder enviar el formulario. El
+anuncio queda guardado en estado "borrador" y su resumen puede consultarse
+desde la página de confirmación tras crearlo.
 
 Desde el resumen del anuncio, el vendedor puede subir y gestionar sus fotos
 en `/vendedor/anuncios/[id]/fotos`, donde se muestra un contador de fotos
@@ -106,4 +108,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-</content>

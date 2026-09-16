@@ -14,7 +14,8 @@ export type AnuncioFormState = {
       | "price"
       | "vehicle_condition"
       | "usage_type"
-      | "location",
+      | "location"
+      | "papers_up_to_date",
       string
     >
   >;
@@ -42,12 +43,13 @@ function esUsageTypeValido(valor: string): valor is UsageType {
  *
  * Los 5 campos exigidos explícitamente por el criterio de aceptación de
  * T-09 (marca, modelo, año, kilometraje, precio) generan un error
- * específico por campo si faltan o son inválidos. Los 3 campos
- * adicionales que exige el esquema (vehicle_condition, usage_type,
- * location, todas NOT NULL sin default) también se validan aquí para
- * que el insert nunca falle por constraint de base de datos, aunque no
- * son parte del criterio de aceptación de esta tarea (T-11 los formaliza
- * más adelante con catálogos/checkbox de papeles al día).
+ * específico por campo si faltan o son inválidos. Los campos exigidos
+ * por el criterio de aceptación de T-11 (estado del vehículo, tipo de
+ * uso de una lista cerrada, papeles al día sí/no) y la ubicación que el
+ * esquema exige NOT NULL sin default también se validan aquí para que
+ * el insert nunca falle por constraint de base de datos ni deje que
+ * `papers_up_to_date` tome el default `false` de la tabla sin que el
+ * usuario haya elegido explícitamente una opción.
  */
 function validarCamposAnuncio(formData: FormData): {
   error: string | null;
@@ -61,6 +63,7 @@ function validarCamposAnuncio(formData: FormData): {
     vehicle_condition: string;
     usage_type: UsageType;
     location: string;
+    papers_up_to_date: boolean;
   };
 } {
   const fieldErrors: AnuncioFormState["fieldErrors"] = {};
@@ -75,6 +78,7 @@ function validarCamposAnuncio(formData: FormData): {
   ).trim();
   const usageTypeRaw = String(formData.get("usage_type") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
+  const papersUpToDateRaw = formData.get("papers_up_to_date");
 
   if (!brand) fieldErrors.brand = "La marca es obligatoria.";
   if (!model) fieldErrors.model = "El modelo es obligatorio.";
@@ -106,6 +110,10 @@ function validarCamposAnuncio(formData: FormData): {
     fieldErrors.location = "La ubicación es obligatoria.";
   }
 
+  if (papersUpToDateRaw !== "true" && papersUpToDateRaw !== "false") {
+    fieldErrors.papers_up_to_date = "Indica si los papeles están al día.";
+  }
+
   if (Object.keys(fieldErrors).length > 0) {
     return { error: "Revisa los campos marcados en rojo.", fieldErrors };
   }
@@ -122,6 +130,7 @@ function validarCamposAnuncio(formData: FormData): {
       vehicle_condition: vehicleCondition,
       usage_type: usageTypeRaw as UsageType,
       location,
+      papers_up_to_date: papersUpToDateRaw === "true",
     },
   };
 }
@@ -136,14 +145,16 @@ function validarCamposAnuncio(formData: FormData): {
  *    vez de dejar que falle con el error crudo de la política RLS
  *    `listings_insert_own` (0006_moderator_seller_review.sql), que de
  *    todas formas actúa como última línea de defensa a nivel de BD.
- * 3. Valida los 5 campos obligatorios del criterio de aceptación (brand,
- *    model, year, mileage, price) más los 3 campos adicionales que la
- *    tabla `listings` exige NOT NULL sin default (vehicle_condition,
- *    usage_type, location). Si falta o es inválido cualquiera de estos 8
- *    campos, no se inserta nada.
+ * 3. Valida los 5 campos obligatorios del criterio de aceptación de T-09
+ *    (brand, model, year, mileage, price) más los campos exigidos por el
+ *    criterio de aceptación de T-11 (vehicle_condition, usage_type de una
+ *    lista cerrada, papers_up_to_date sí/no) y la ubicación que la tabla
+ *    `listings` exige NOT NULL sin default. Si falta o es inválido
+ *    cualquiera de estos campos, no se inserta nada.
  * 4. Inserta en `listings` con el cliente autenticado normal (respeta
- *    RLS); `status` queda en 'borrador' y `papers_up_to_date` en false
- *    por default (T-11 los expondrá explícitamente en el formulario).
+ *    RLS); `status` queda en 'borrador' y `papers_up_to_date` se guarda
+ *    con el valor booleano que el usuario eligió explícitamente (nunca
+ *    el default `false` de la tabla).
  * 5. Si el insert tiene éxito, redirige a la página de confirmación del
  *    anuncio recién creado.
  */
@@ -207,6 +218,7 @@ export async function crearAnuncio(
       vehicle_condition: validacion.valores.vehicle_condition,
       usage_type: validacion.valores.usage_type,
       location: validacion.valores.location,
+      papers_up_to_date: validacion.valores.papers_up_to_date,
     })
     .select("id")
     .single();

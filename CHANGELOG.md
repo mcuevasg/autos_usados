@@ -115,6 +115,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   si tiene menos de 3 fotos cargadas. Se incluyó un test de integración
   contra Supabase real (`supabase/tests/fotos-anuncio-t10.test.ts`) que
   cubre la carga de fotos y la exigencia del mínimo para publicar.
+- **T-11: Campos obligatorios adicionales del anuncio.** El formulario de
+  creación de anuncio (`app/vendedor/anuncios/nuevo`) ahora incluye el
+  campo obligatorio "¿Papeles al día?" (sí/no), sin opción preseleccionada:
+  el vendedor debe elegir explícitamente una de las dos opciones, validado
+  en servidor, que rechaza el envío si no se elige exactamente una. El
+  valor elegido se guarda tal cual, sin depender del valor por defecto de
+  la columna en base de datos. Los otros dos campos del criterio de
+  aceptación (estado del vehículo y tipo de uso de una lista cerrada) ya
+  estaban implementados desde T-09. El resumen del anuncio
+  (`app/vendedor/anuncios/[id]`) ahora muestra "Papeles al día: Sí/No". Se
+  incluyó un test de integración contra Supabase real
+  (`supabase/tests/anuncio-nuevo-t11.test.ts`) que cubre la validación de
+  este campo.
 
 ### Corregido
 
@@ -145,4 +158,3 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `lib/listings.ts`, que ambas páginas usan para filtrar explícitamente por
   dueño (`seller_id`) además de RLS, verificado con el test de integración
   `supabase/tests/anuncio-ajeno-control-acceso.test.ts`.
-</content>

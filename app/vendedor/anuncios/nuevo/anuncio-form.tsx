@@ -17,8 +17,9 @@ const USAGE_TYPE_OPCIONES: { value: string; label: string }[] = [
 /**
  * Valida en el cliente los 5 campos obligatorios exigidos por el
  * criterio de aceptación de T-09 (marca, modelo, año, kilometraje,
- * precio), más los 3 campos adicionales que la tabla `listings` exige
- * NOT NULL sin default (estado del vehículo, tipo de uso, ubicación).
+ * precio), más los campos adicionales exigidos por T-11 (estado del
+ * vehículo, tipo de uso, papeles al día) y la ubicación que la tabla
+ * `listings` exige NOT NULL sin default.
  *
  * Es solo feedback inmediato (no bloquea seguridad): la Server Action
  * (`crearAnuncio`) vuelve a validar todo en el servidor, que es la
@@ -39,6 +40,7 @@ function validarEnCliente(
   ).trim();
   const usageType = String(formData.get("usage_type") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
+  const papersUpToDateRaw = formData.get("papers_up_to_date");
 
   if (!brand) fieldErrors.brand = "La marca es obligatoria.";
   if (!model) fieldErrors.model = "El modelo es obligatorio.";
@@ -68,6 +70,10 @@ function validarEnCliente(
 
   if (!location) {
     fieldErrors.location = "La ubicación es obligatoria.";
+  }
+
+  if (papersUpToDateRaw !== "true" && papersUpToDateRaw !== "false") {
+    fieldErrors.papers_up_to_date = "Indica si los papeles están al día.";
   }
 
   return fieldErrors;
@@ -249,6 +255,37 @@ export function AnuncioForm() {
           </p>
         )}
       </div>
+
+      <fieldset className="flex flex-col gap-1">
+        <legend className="text-sm font-medium">¿Papeles al día?</legend>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="papers_up_to_date"
+              value="true"
+              onChange={() => setClientFieldErrors(null)}
+              className="h-4 w-4"
+            />
+            Sí
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="papers_up_to_date"
+              value="false"
+              onChange={() => setClientFieldErrors(null)}
+              className="h-4 w-4"
+            />
+            No
+          </label>
+        </div>
+        {fieldErrors.papers_up_to_date && (
+          <p className="text-sm text-red-600" role="alert">
+            {fieldErrors.papers_up_to_date}
+          </p>
+        )}
+      </fieldset>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="location" className="text-sm font-medium">
