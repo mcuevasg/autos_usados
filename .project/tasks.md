@@ -33,7 +33,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-04: Definir esquema de base de datos y RLS
 
 - **Depende de:** T-02
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** existen en Postgres las tablas `sellers`,
   `listings`, `listing_photos`, `sales`, `notifications` con sus columnas
   principales (ver `architecture.md`), y las políticas de Row Level
