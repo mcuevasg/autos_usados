@@ -175,6 +175,15 @@ export default async function AnuncioCreadoPage({
           </Link>
         </div>
 
+        {listing.status === "publicado" && (
+          <Link
+            href={`/vendedor/anuncios/${listing.id}/venta`}
+            className="text-sm font-medium underline"
+          >
+            Solicitar venta concretada
+          </Link>
+        )}
+
         <Link
           href="/vendedor/anuncios/nuevo"
           className="text-sm font-medium underline"

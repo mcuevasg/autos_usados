@@ -109,6 +109,15 @@ kilometraje, estado del vehículo, papeles al día, tipo de vendedor (persona
 natural / concesionario) y ubicación de cada anuncio, para facilitar la
 comparación entre ofertas similares.
 
+## Solicitar una venta
+
+Desde el resumen de un anuncio propio en estado "Publicado", el vendedor
+puede solicitar registrar una venta concretada en
+`/vendedor/anuncios/[id]/venta`, indicando el precio final acordado. El
+anuncio permanece "Publicado" mientras la solicitud está pendiente de
+aprobación, y no es posible enviar una nueva solicitud si ya existe una
+pendiente para ese anuncio.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
@@ -132,3 +141,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</content>

@@ -165,6 +165,15 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   un test de integración contra Supabase real
   (`supabase/tests/buscar-agrupacion-t14.test.ts`) que cubre la agrupación
   por similitud y verifica que esos datos sensibles nunca se filtran.
+- **T-15: Solicitud de venta concretada por el vendedor.** Se agregó la
+  página `app/vendedor/anuncios/[id]/venta`, enlazada desde el resumen del
+  anuncio, para que el vendedor de un anuncio en estado "Publicado" pueda
+  enviar una solicitud de venta indicando el precio final. Mientras la
+  solicitud está pendiente de aprobación, el anuncio permanece "Publicado".
+  La página evita solicitudes duplicadas verificando, antes de mostrar el
+  formulario, si ya existe una solicitud pendiente para ese anuncio. Se
+  incluyó un test de integración contra Supabase real
+  (`supabase/tests/venta-t15.test.ts`) que cubre este flujo.
 
 ### Corregido
 
@@ -210,3 +219,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   ajustaron los tests `anuncio-ajeno-control-acceso`, `fotos-anuncio-t10` y
   `rls-sales-insert-policy` para reflejar que ahora solo un moderador
   autenticado puede publicar un anuncio.
+- **T-15: Hallazgo de seguridad en la política de inserción de `sales`.**
+  La política `sales_insert_own` exigía que la solicitud de venta quedara
+  pendiente de aprobación y sin comisión (T-04), pero nunca exigió que el
+  anuncio referenciado estuviera en estado "publicado": esa regla solo se
+  validaba en la Server Action `solicitarVenta`, por lo que un vendedor
+  podía saltarse la app y llamar directamente a la API de Supabase para
+  crear una solicitud de venta sobre un anuncio propio en "borrador",
+  "pausado", "vendido" o "rechazado". Se corrigió agregando la condición
+  `listings.status = 'publicado'` a la política
+  (`supabase/migrations/0013_sales_insert_requires_published.sql`), que de
+  paso agrega un índice único que garantiza a nivel de base de datos que
+  no exista más de una solicitud pendiente simultánea por anuncio (antes
+  solo lo evitaba una verificación previa no atómica en la Server Action),
+  verificado con los tests de integración `venta-t15` y
+  `rls-sales-insert-policy`.
+</content>

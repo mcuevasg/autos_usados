@@ -140,7 +140,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-15: Solicitud de venta concretada por el vendedor
 
 - **Depende de:** T-12
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-08):** desde un anuncio en estado
   "Publicado", el vendedor puede enviar una solicitud de venta
   concretada indicando el precio final; el anuncio permanece
