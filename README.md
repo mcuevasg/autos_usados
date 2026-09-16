@@ -29,6 +29,10 @@ Variables requeridas:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `RESEND_API_KEY`: clave de [Resend](https://resend.com), usada para enviar
+  las notificaciones por email. Mientras la cuenta Resend no tenga un
+  dominio propio verificado, los correos de prueba solo se entregan a la
+  casilla del dueño de la cuenta (limitación del proveedor en modo sandbox).
 
 `.env.local` no se versiona.
 
@@ -153,6 +157,13 @@ aprueba una venta (indicando el monto de la comisión). La página `/cuenta`
 enlaza a `/notificaciones` mostrando un contador de las que aún no se han
 leído.
 
+Además de la notificación dentro de la app, cuando un moderador cambia el
+estado de un anuncio o aprueba una venta, el usuario afectado también recibe
+un correo electrónico con el mismo aviso (vía [Resend](https://resend.com)).
+La verificación de vendedor solo genera notificación dentro de la app, sin
+email. Un email que falle en enviarse nunca bloquea ni revierte la acción
+del moderador.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
@@ -176,3 +187,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</content>

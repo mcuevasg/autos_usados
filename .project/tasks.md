@@ -187,7 +187,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-20: Notificaciones por email
 
 - **Depende de:** T-19
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** los mismos eventos de T-19 (cambio de
   estado de anuncio, aprobación de venta) disparan un correo al usuario
   afectado vía un proveedor de email con tier gratuito (ej. Resend).

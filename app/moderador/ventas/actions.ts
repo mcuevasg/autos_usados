@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { crearNotificacion } from "@/lib/notifications";
+import { enviarEmailEvento, obtenerEmailUsuario } from "@/lib/email";
 
 export type AprobarVentaState = {
   error: string | null;
@@ -73,6 +74,10 @@ const formateadorPrecio = new Intl.NumberFormat("es-CL", {
  * `listings_select_moderator` (0010) y `sellers_select_moderator` (0006).
  * Una notificación fallida no debe bloquear la aprobación de la venta
  * (ver comentario en lib/notifications.ts).
+ *
+ * Además de la notificación in-app, envía un email (T-20) al mismo
+ * usuario: ver lib/email.ts para el diseño "fire and forget" y la
+ * limitación de Resend en modo sandbox (sin dominio propio verificado).
  */
 async function notificarVentaAprobada(
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
@@ -102,6 +107,17 @@ async function notificarVentaAprobada(
       `Tu venta de ${listing.brand} ${listing.model} fue aprobada. ` +
       `Comisión: ${formateadorPrecio.format(commission)}.`,
   });
+
+  const email = await obtenerEmailUsuario(seller.user_id);
+  if (email) {
+    await enviarEmailEvento({
+      to: email,
+      subject: "Tu venta fue aprobada",
+      html:
+        `<p>Tu venta de <strong>${listing.brand} ${listing.model}</strong> fue aprobada.</p>` +
+        `<p>Comisión: <strong>${formateadorPrecio.format(commission)}</strong>.</p>`,
+    });
+  }
 }
 
 /**

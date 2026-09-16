@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { crearNotificacion } from "@/lib/notifications";
+import { enviarEmailEvento, obtenerEmailUsuario } from "@/lib/email";
 
 export type ModeradorAnuncioAccionState = {
   error: string | null;
@@ -148,6 +149,20 @@ export async function actualizarEstadoAnuncio(
           `Tu anuncio ${updatedListing.brand} ${updatedListing.model} ` +
           `pasó a estado ${ETIQUETAS_ESTADO[nuevoEstado]}.`,
       });
+
+      // Email (T-20), además de la notificación in-app: ver
+      // lib/email.ts para el diseño "fire and forget" y la limitación de
+      // Resend en modo sandbox (sin dominio propio verificado).
+      const email = await obtenerEmailUsuario(seller.user_id);
+      if (email) {
+        await enviarEmailEvento({
+          to: email,
+          subject: "Tu anuncio cambió de estado",
+          html:
+            `<p>Tu anuncio <strong>${updatedListing.brand} ${updatedListing.model}</strong> ` +
+            `pasó a estado <strong>${ETIQUETAS_ESTADO[nuevoEstado]}</strong>.</p>`,
+        });
+      }
     }
   }
 

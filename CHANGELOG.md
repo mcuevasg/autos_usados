@@ -221,6 +221,23 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   Supabase real (`supabase/tests/notificaciones-t19.test.ts`) que cubre la
   creación de notificaciones desde los tres flujos de moderador, la
   lectura de las propias y el marcado como leída.
+- **T-20: Notificaciones por email.** Se agregó `lib/email.ts`, con
+  `enviarEmailEvento` (envía el correo vía [Resend](https://resend.com), con
+  un diseño "a prueba de fallos" que nunca bloquea la acción principal del
+  moderador si el envío falla) y `obtenerEmailUsuario` (obtiene el email del
+  usuario afectado). El envío de email ahora acompaña, además de la
+  notificación dentro de la app ya existente desde T-19, a los dos eventos
+  que exige el criterio de esta tarea: el cambio de estado de un anuncio y
+  la aprobación de una venta; la verificación de vendedor (T-19) sigue sin
+  enviar email, tal como especifica el criterio. La clave de Resend se
+  configura mediante la nueva variable de entorno `RESEND_API_KEY`,
+  documentada en `.env.local.example`. Nota de infraestructura: sin un
+  dominio propio verificado en Resend, los correos de prueba solo se
+  entregan a la casilla del dueño de la cuenta Resend (limitación del
+  proveedor en modo sandbox, no del código); en producción basta con
+  verificar un dominio y cambiar el remitente. Se incluyó un test de
+  integración contra la API real de Resend
+  (`supabase/tests/email-t20.test.ts`), incluyendo un envío real de prueba.
 
 ### Corregido
 
@@ -301,3 +318,4 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/migrations/0016_featured_activation_insert_guard.sql`),
   verificado con el test de integración
   `supabase/tests/destacar-insert-guard-t17.test.ts`.
+</content>
