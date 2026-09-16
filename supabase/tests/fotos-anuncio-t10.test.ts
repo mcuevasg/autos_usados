@@ -520,9 +520,9 @@ describe.skipIf(!hasCredentials)(
     );
 
     it(
-      "(5) con service_role, publicar el listing de A con solo 2 fotos FALLA por el trigger de mínimo 3 fotos",
+      "(5) como moderador, publicar el listing de A con solo 2 fotos FALLA por el trigger de mínimo 3 fotos",
       async () => {
-        const { data, error } = await adminClient
+        const { data, error } = await modClient
           .from("listings")
           .update({ status: "publicado" })
           .eq("id", listingAId)
@@ -575,7 +575,7 @@ describe.skipIf(!hasCredentials)(
           .eq("listing_id", listingAId);
         expect(fotos).toHaveLength(3);
 
-        const { data, error } = await adminClient
+        const { data, error } = await modClient
           .from("listings")
           .update({ status: "publicado" })
           .eq("id", listingAId)

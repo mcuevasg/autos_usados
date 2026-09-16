@@ -128,6 +128,20 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   incluyó un test de integración contra Supabase real
   (`supabase/tests/anuncio-nuevo-t11.test.ts`) que cubre la validación de
   este campo.
+- **T-12: Ciclo de vida del anuncio y panel de moderador.** Se agregó la
+  página `app/moderador/anuncios`, que lista todos los anuncios y permite a
+  un moderador cambiar su estado entre "Borrador", "Publicado", "Pausado",
+  "Vendido" y "Rechazado". Se agregó `app/moderador/layout.tsx`, con
+  navegación entre el panel de vendedores y el de anuncios. Se incluyó un
+  test de integración contra Supabase real
+  (`supabase/tests/listing-status-lifecycle-t12.test.ts`) que cubre el
+  cambio de estado del anuncio por un moderador. La restricción de "solo
+  los anuncios en estado Publicado aparecen en búsquedas públicas" ya
+  estaba garantizada desde T-04 (política `listings_select_published`), sin
+  cambios necesarios. Queda fuera de alcance, y documentado explícitamente
+  como tal, impedir nuevos contactos de compradores en anuncios
+  vendidos/rechazados, ya que aún no existe ninguna funcionalidad de
+  contacto comprador-vendedor en el proyecto.
 
 ### Corregido
 
@@ -158,3 +172,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `lib/listings.ts`, que ambas páginas usan para filtrar explícitamente por
   dueño (`seller_id`) además de RLS, verificado con el test de integración
   `supabase/tests/anuncio-ajeno-control-acceso.test.ts`.
+- **T-12: Hallazgos de seguridad y de visibilidad en el ciclo de vida del
+  anuncio.** Se detectó que un vendedor podía cambiar el estado de su
+  propio anuncio directamente, incluso publicarlo sin pasar por la revisión
+  de un moderador. Se corrigió con un trigger que bloquea cualquier cambio
+  de estado que no provenga de un moderador, tanto en creación como en
+  actualización (`supabase/migrations/0010_listing_status_lifecycle.sql`).
+  Adicionalmente, se detectó en QA que las políticas RLS de
+  `listing_photos` impedían a un moderador ver las fotos de anuncios
+  ajenos, lo que bloqueaba erróneamente la publicación de anuncios que sí
+  cumplían el mínimo de fotos; se corrigió dando al moderador visibilidad
+  de las fotos de cualquier anuncio
+  (`supabase/migrations/0011_listing_photos_moderator_access.sql`). Se
+  ajustaron los tests `anuncio-ajeno-control-acceso`, `fotos-anuncio-t10` y
+  `rls-sales-insert-policy` para reflejar que ahora solo un moderador
+  autenticado puede publicar un anuncio.
+</content>

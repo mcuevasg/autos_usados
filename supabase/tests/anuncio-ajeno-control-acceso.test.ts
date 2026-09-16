@@ -387,9 +387,10 @@ describe.skipIf(!hasCredentials)(
       // Publicar el listing de A. La acción real de "publicar" (T-12) aún
       // no existe en la app, así que —igual que
       // supabase/tests/fotos-anuncio-t10.test.ts— se hace vía
-      // service_role (que bypassa RLS pero NO el trigger de mínimo de
+      // el cliente de moderador (el trigger listings_protect_status_update
+      // exige un moderador real; no bypassa el trigger de mínimo de
       // fotos, ya satisfecho arriba).
-      const { data: publishedData, error: publishError } = await adminClient
+      const { data: publishedData, error: publishError } = await modClient
         .from("listings")
         .update({ status: "publicado" })
         .eq("id", listingAId)

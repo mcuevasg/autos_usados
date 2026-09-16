@@ -133,7 +133,6 @@ describe.skipIf(!hasCredentials)(
           papers_up_to_date: true,
           usage_type: "familiar",
           location: "Santiago",
-          status: "publicado",
         })
         .select("id")
         .single();

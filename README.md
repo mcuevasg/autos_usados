@@ -71,6 +71,12 @@ que lista los vendedores en estado "pendiente" junto con su documentación de
 respaldo, y permite marcarlos como "Verificado" o "Rechazado". Solo un
 vendedor verificado puede publicar anuncios.
 
+Desde `/moderador/anuncios`, el moderador ve todos los anuncios de la
+plataforma y puede cambiar su estado entre "Borrador", "Publicado",
+"Pausado", "Vendido" y "Rechazado". Solo un cambio de estado realizado por
+un moderador queda permitido: un vendedor no puede publicar (ni cambiar de
+ningún otro modo el estado de) su propio anuncio directamente.
+
 ## Publicar un anuncio
 
 Un vendedor con estado "Verificado" puede crear un anuncio en
@@ -83,7 +89,10 @@ desde la página de confirmación tras crearlo.
 
 Desde el resumen del anuncio, el vendedor puede subir y gestionar sus fotos
 en `/vendedor/anuncios/[id]/fotos`, donde se muestra un contador de fotos
-cargadas. Un anuncio necesita al menos 3 fotos para poder publicarse.
+cargadas. Un anuncio necesita al menos 3 fotos para poder publicarse, y su
+publicación (paso a estado "Publicado") la realiza un moderador desde
+`/moderador/anuncios`. Solo los anuncios en estado "Publicado" aparecen en
+las búsquedas públicas.
 
 ## Tests
 
@@ -108,3 +117,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</content>

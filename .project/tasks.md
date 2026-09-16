@@ -107,7 +107,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-12: Ciclo de vida del anuncio y panel de moderador
 
 - **Depende de:** T-09, T-08
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-05):** un anuncio nuevo se crea en estado
   "Borrador"; solo un moderador puede cambiar su estado entre Borrador,
   Publicado, Pausado, Vendido y Rechazado; solo los anuncios en estado
