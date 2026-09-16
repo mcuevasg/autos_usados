@@ -196,6 +196,18 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   concesionario y que el anuncio esté publicado. Se incluyó un test de
   integración contra Supabase real
   (`supabase/tests/destacar-t17.test.ts`) que cubre este flujo.
+- **T-18: Prioridad y etiqueta visual de anuncios destacados.** La página
+  `app/buscar` ahora muestra una etiqueta "⭐ Destacado" junto a los
+  anuncios con plan destacado vigente, y les da prioridad de posición tanto
+  dentro de cada grupo comparativo como entre grupos (un grupo con al menos
+  un anuncio destacado aparece antes que uno sin destacados). Se agregó
+  `esDestacadoVigente(listing)` en `lib/listings.ts`, que exige que el plan
+  esté activo Y que su fecha de expiración no haya pasado, en vez de
+  confiar solo en el flag `featured_active` de la base de datos, ya que no
+  existe ningún proceso automático que lo desactive al vencer (ver T-17);
+  al expirar la fecha, el anuncio pierde la etiqueta y la prioridad de
+  forma automática, sin intervención manual. Se incluyeron tests unitarios
+  (`lib/listings.test.ts`) y se verificó el flujo con una integración real.
 
 ### Corregido
 
@@ -276,4 +288,3 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/migrations/0016_featured_activation_insert_guard.sql`),
   verificado con el test de integración
   `supabase/tests/destacar-insert-guard-t17.test.ts`.
-</content>

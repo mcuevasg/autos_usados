@@ -109,6 +109,12 @@ kilometraje, estado del vehículo, papeles al día, tipo de vendedor (persona
 natural / concesionario) y ubicación de cada anuncio, para facilitar la
 comparación entre ofertas similares.
 
+Los anuncios con plan "Destacado" vigente se muestran con la etiqueta
+"⭐ Destacado" y aparecen primero: tanto dentro de cada grupo comparativo
+como entre los grupos, un grupo con al menos un anuncio destacado se
+muestra antes que uno sin destacados. Un anuncio deja de mostrarse como
+destacado automáticamente en cuanto su plan expira.
+
 ## Solicitar una venta
 
 Desde el resumen de un anuncio propio en estado "Publicado", el vendedor
@@ -131,7 +137,9 @@ Desde el resumen de un anuncio propio en estado "Publicado", un vendedor
 concesionario puede activar el plan "Destacado" para ese anuncio. El plan
 dura 30 días desde la activación, y su fecha de expiración se muestra en el
 mismo resumen mientras esté vigente. Esta opción no está disponible para
-vendedores persona natural.
+vendedores persona natural. Mientras el plan está vigente, el anuncio recibe
+la etiqueta y la prioridad de posición descritas en la sección "Buscar
+autos"; al expirar, las pierde automáticamente, sin intervención manual.
 
 ## Tests
 
@@ -156,4 +164,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-</content>

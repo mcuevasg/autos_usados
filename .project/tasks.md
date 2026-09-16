@@ -168,7 +168,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-18: Prioridad y etiqueta visual de anuncios destacados
 
 - **Depende de:** T-17, T-14
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-09):** los anuncios con plan destacado
   activo muestran una etiqueta visual distintiva y aparecen con
   prioridad de posición en resultados de búsqueda y en los grupos

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { esDestacadoVigente } from "@/lib/listings";
 
 const formateadorPrecio = new Intl.NumberFormat("es-CL", {
   style: "currency",
@@ -18,6 +19,8 @@ type Anuncio = {
   vehicle_condition: string;
   papers_up_to_date: boolean;
   seller_id: string;
+  featured_active: boolean;
+  featured_expires_at: string | null;
 };
 
 type FiltrosBusqueda = {
@@ -152,7 +155,7 @@ export default async function BuscarPage({
   let query = supabase
     .from("listings")
     .select(
-      "id, brand, model, year, mileage, price, location, vehicle_condition, papers_up_to_date, seller_id"
+      "id, brand, model, year, mileage, price, location, vehicle_condition, papers_up_to_date, seller_id, featured_active, featured_expires_at"
     )
     .eq("status", "publicado");
 
@@ -179,11 +182,39 @@ export default async function BuscarPage({
 
   const listings = (listingsData ?? []) as Anuncio[];
 
+  // T-18 (REQ-09): prioridad de posición para anuncios con plan
+  // destacado VIGENTE. Se ordena `listings` ANTES de agrupar (en vez de
+  // limitarse al `order("created_at", ...)` de la query, que sigue
+  // determinando el orden dentro de cada "empate") para que los
+  // destacados vigentes queden primero tanto en la lista base como, por
+  // construcción, dentro de cada grupo comparativo armado por
+  // `agruparPorSimilitud` (que preserva el orden de iteración del array
+  // de entrada al ir empujando anuncios a `grupoExistente.anuncios`).
+  // `Array.prototype.sort` en V8/Node es ESTABLE, así que dos anuncios
+  // con el mismo valor de "destacado" (ambos vigentes entre sí, o ambos
+  // no vigentes entre sí) conservan el orden secundario que ya traían:
+  // `created_at` descendente, el mismo criterio usado desde T-13 para el
+  // resto de los resultados.
+  //
+  // Se usa `esDestacadoVigente` (lib/listings.ts) y NUNCA
+  // `featured_active` crudo: como no existe ningún cron que apague
+  // `featured_active` al expirar (T-17), un anuncio con el plan vencido
+  // pero `featured_active` todavía en `true` en la BD debe volver al
+  // orden estándar de forma automática, sin ningún job adicional en esta
+  // iteración.
+  const listingsOrdenados = [...listings].sort((a, b) => {
+    const aVigente = esDestacadoVigente(a) ? 1 : 0;
+    const bVigente = esDestacadoVigente(b) ? 1 : 0;
+    return bVigente - aVigente;
+  });
+
   // Segunda consulta, acotada a la vista pública `sellers_public_info`
   // (solo id + seller_type), para no tener que abrir el RLS de
   // `sellers` completo. Solo se piden los sellers presentes en los
   // resultados ya filtrados.
-  const sellerIds = Array.from(new Set(listings.map((l) => l.seller_id)));
+  const sellerIds = Array.from(
+    new Set(listingsOrdenados.map((l) => l.seller_id))
+  );
 
   const tiposPorSellerId = new Map<string, SellerType>();
   if (sellerIds.length > 0) {
@@ -200,7 +231,22 @@ export default async function BuscarPage({
     }
   }
 
-  const grupos = agruparPorSimilitud(listings);
+  const grupos = agruparPorSimilitud(listingsOrdenados);
+
+  // T-18 (REQ-09): prioridad también ENTRE grupos comparativos, además
+  // de dentro de cada uno (ya resuelto arriba al agrupar
+  // `listingsOrdenados`). Un grupo que contiene al menos un anuncio
+  // destacado vigente debe aparecer antes que los grupos sin ninguno.
+  // Se aplica un sort ESTABLE sobre el array ya ordenado por
+  // `agruparPorSimilitud` (marca > modelo > año mínimo), que queda como
+  // criterio secundario/de desempate entre grupos con el mismo estado de
+  // "tiene destacado" (evita que el orden alfabético por marca/modelo se
+  // pierda dentro de cada uno de los dos "bloques").
+  grupos.sort((a, b) => {
+    const aTieneDestacado = a.anuncios.some(esDestacadoVigente) ? 1 : 0;
+    const bTieneDestacado = b.anuncios.some(esDestacadoVigente) ? 1 : 0;
+    return bTieneDestacado - aTieneDestacado;
+  });
 
   return (
     <div className="flex flex-1 flex-col items-center gap-8 bg-zinc-50 px-6 py-16 dark:bg-black">
@@ -310,6 +356,7 @@ export default async function BuscarPage({
                 <table className="w-full min-w-[640px] border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-black/[.15] text-left dark:border-white/[.2]">
+                      <th className="py-2 pr-4">Destacado</th>
                       <th className="py-2 pr-4">Año</th>
                       <th className="py-2 pr-4">Precio</th>
                       <th className="py-2 pr-4">Kilometraje</th>
@@ -325,6 +372,13 @@ export default async function BuscarPage({
                         key={anuncio.id}
                         className="border-b border-black/[.08] last:border-none dark:border-white/[.1]"
                       >
+                        <td className="py-2 pr-4">
+                          {esDestacadoVigente(anuncio) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-900/30 dark:text-amber-300">
+                              ⭐ Destacado
+                            </span>
+                          )}
+                        </td>
                         <td className="py-2 pr-4">{anuncio.year}</td>
                         <td className="py-2 pr-4">
                           {formateadorPrecio.format(Number(anuncio.price))}
