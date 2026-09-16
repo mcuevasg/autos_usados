@@ -142,6 +142,17 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   como tal, impedir nuevos contactos de compradores en anuncios
   vendidos/rechazados, ya que aún no existe ninguna funcionalidad de
   contacto comprador-vendedor en el proyecto.
+- **T-13: Filtros de búsqueda de anuncios.** Se agregó la página pública
+  `app/buscar` (sin necesidad de sesión), con filtros combinables por marca,
+  modelo, año y ubicación. Los resultados se restringen siempre a anuncios
+  en estado "Publicado" mediante un filtro explícito en el código, además de
+  la política RLS `listings_select_published` ya existente desde T-04. Si
+  ningún anuncio coincide con los filtros aplicados, se muestra un mensaje
+  de "sin resultados" en lugar de un error. La home (`app/page.tsx`) ahora
+  enlaza a `/buscar` y a `/login`, reemplazando el boilerplate de
+  `create-next-app`. Se incluyó un test de integración contra Supabase real
+  (`supabase/tests/buscar-t13.test.ts`) que cubre los filtros combinados y
+  el caso sin resultados.
 
 ### Corregido
 

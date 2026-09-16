@@ -119,7 +119,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-13: Filtros de búsqueda de anuncios
 
 - **Depende de:** T-12
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-06):** el comprador puede filtrar
   anuncios publicados combinando marca, modelo, año y ubicación; los
   resultados solo incluyen anuncios en estado "Publicado" que cumplen

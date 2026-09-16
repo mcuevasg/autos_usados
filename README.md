@@ -94,6 +94,15 @@ publicación (paso a estado "Publicado") la realiza un moderador desde
 `/moderador/anuncios`. Solo los anuncios en estado "Publicado" aparecen en
 las búsquedas públicas.
 
+## Buscar autos
+
+Cualquier visitante, sin necesidad de iniciar sesión, puede buscar autos
+publicados en `/buscar`, con filtros combinables por marca, modelo, año y
+ubicación. Los resultados solo muestran anuncios en estado "Publicado"; si
+ningún anuncio coincide con los filtros aplicados, se muestra un mensaje
+indicando que no hay resultados. La página de inicio enlaza directamente a
+`/buscar` y a `/login`.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
