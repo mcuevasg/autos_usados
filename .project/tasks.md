@@ -129,7 +129,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-14: Agrupación automática por similitud
 
 - **Depende de:** T-13
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-07):** al buscar, el sistema agrupa
   automáticamente anuncios que comparten marca, modelo y rango de año
   similar en un listado comparativo, mostrando por cada anuncio al menos

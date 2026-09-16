@@ -153,6 +153,18 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `create-next-app`. Se incluyó un test de integración contra Supabase real
   (`supabase/tests/buscar-t13.test.ts`) que cubre los filtros combinados y
   el caso sin resultados.
+- **T-14: Agrupación automática por similitud.** La página `app/buscar`
+  ahora agrupa los resultados de la búsqueda por marca + modelo + rango de
+  año similar (buckets de 3 años), mostrando por cada grupo un listado
+  comparativo con precio, año, kilometraje, estado del vehículo, papeles al
+  día, vendedor y ubicación de cada anuncio. Para mostrar el vendedor sin
+  exponer datos sensibles, se agregó la vista pública `sellers_public_info`
+  (`supabase/migrations/0012_sellers_public_view.sql`), que expone
+  únicamente el tipo de vendedor (persona natural / concesionario), sin
+  exponer nunca el RUT ni el documento de respaldo del vendedor. Se incluyó
+  un test de integración contra Supabase real
+  (`supabase/tests/buscar-agrupacion-t14.test.ts`) que cubre la agrupación
+  por similitud y verifica que esos datos sensibles nunca se filtran.
 
 ### Corregido
 
@@ -198,4 +210,3 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   ajustaron los tests `anuncio-ajeno-control-acceso`, `fotos-anuncio-t10` y
   `rls-sales-insert-policy` para reflejar que ahora solo un moderador
   autenticado puede publicar un anuncio.
-</content>

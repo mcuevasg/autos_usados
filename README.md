@@ -103,6 +103,12 @@ ningún anuncio coincide con los filtros aplicados, se muestra un mensaje
 indicando que no hay resultados. La página de inicio enlaza directamente a
 `/buscar` y a `/login`.
 
+Los resultados se agrupan automáticamente por marca, modelo y rango de año
+similar, mostrando por cada grupo un listado comparativo con precio, año,
+kilometraje, estado del vehículo, papeles al día, tipo de vendedor (persona
+natural / concesionario) y ubicación de cada anuncio, para facilitar la
+comparación entre ofertas similares.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
@@ -126,4 +132,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-</content>
