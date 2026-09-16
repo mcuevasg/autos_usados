@@ -52,7 +52,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-06: Validador local de RUT (dígito verificador)
 
 - **Depende de:** T-01
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** existe una función que, dado un RUT,
   retorna válido/inválido según el algoritmo módulo 11 chileno; probada
   con al menos un RUT válido y uno inválido.
