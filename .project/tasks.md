@@ -90,7 +90,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-10: Carga de fotos del anuncio (mínimo 3)
 
 - **Depende de:** T-09, T-02
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-03):** el vendedor puede subir fotos a
   Supabase Storage desde el formulario de anuncio; el anuncio no puede
   enviarse a publicación con menos de 3 fotos cargadas.

@@ -103,6 +103,18 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   guardados. Se incluyó un test de integración contra Supabase real
   (`supabase/tests/anuncio-nuevo-t09.test.ts`) que cubre el bloqueo por RLS
   a vendedores no verificados y la validación de los campos requeridos.
+- **T-10: Carga de fotos del anuncio (mínimo 3).** Se agregó la página
+  `app/vendedor/anuncios/[id]/fotos`, enlazada desde el resumen del anuncio,
+  para que el vendedor suba y gestione las fotos de su anuncio, con un
+  contador "X de 3 fotos mínimas". Las fotos se almacenan en un bucket
+  privado de Supabase Storage (`listing-photos`), aislado por dueño del
+  anuncio mediante políticas RLS
+  (`supabase/migrations/0009_listing_photos_storage_and_minimum.sql`). Esta
+  misma migración agrega un trigger de base de datos
+  (`listings_require_min_photos_to_publish`) que impide publicar un anuncio
+  si tiene menos de 3 fotos cargadas. Se incluyó un test de integración
+  contra Supabase real (`supabase/tests/fotos-anuncio-t10.test.ts`) que
+  cubre la carga de fotos y la exigencia del mínimo para publicar.
 
 ### Corregido
 
@@ -123,3 +135,14 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/migrations/0007_protect_verification_status.sql` y
   `supabase/migrations/0008_protect_verification_status_insert.sql`),
   verificados con tests de integración reales contra Supabase.
+- **T-10: Hallazgo de control de acceso en las páginas de gestión del
+  anuncio.** Las páginas de resumen (`app/vendedor/anuncios/[id]`) y de
+  fotos (`app/vendedor/anuncios/[id]/fotos`) confiaban únicamente en RLS
+  para obtener el anuncio, pero la política de lectura vigente permite a
+  cualquier usuario leer anuncios ajenos en estado "publicado"; esto podía
+  exponer a un vendedor la gestión (o al menos la vista) de anuncios que no
+  le pertenecían. Se corrigió agregando `obtenerAnuncioPropio` en
+  `lib/listings.ts`, que ambas páginas usan para filtrar explícitamente por
+  dueño (`seller_id`) además de RLS, verificado con el test de integración
+  `supabase/tests/anuncio-ajeno-control-acceso.test.ts`.
+</content>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { obtenerAnuncioPropio } from "@/lib/listings";
 
 const ETIQUETAS_ESTADO: Record<string, string> = {
   borrador: "Borrador",
@@ -23,15 +24,32 @@ const formateadorPrecio = new Intl.NumberFormat("es-CL", {
   maximumFractionDigits: 0,
 });
 
+const MINIMO_FOTOS = 3;
+
+type AnuncioResumen = {
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  mileage: number;
+  price: number;
+  vehicle_condition: string;
+  usage_type: string;
+  location: string;
+  status: string;
+  created_at: string;
+};
+
 /**
  * Página de confirmación del anuncio recién creado (T-09).
  *
  * No es la página de detalle público del anuncio (eso corresponde a
  * tareas posteriores de búsqueda/listado, T-13/T-14): aquí solo se
- * muestra un resumen de lo que se guardó, apoyándose en
- * `listings_select_own` (0002_rls_policies.sql) para que el vendedor
- * dueño pueda leer su propio anuncio en cualquier estado (incluido
- * "borrador").
+ * muestra un resumen de lo que se guardó. Usa `obtenerAnuncioPropio`
+ * (lib/listings.ts) para verificar EXPLÍCITAMENTE que el listing
+ * pertenece a un seller del usuario autenticado: no basta con confiar en
+ * RLS, porque `listings_select_published` (0002_rls_policies.sql) permite
+ * a cualquier usuario autenticado leer anuncios publicados ajenos.
  */
 export default async function AnuncioCreadoPage({
   params,
@@ -49,13 +67,15 @@ export default async function AnuncioCreadoPage({
     redirect("/login");
   }
 
-  const { data: listing, error: listingError } = await supabase
-    .from("listings")
-    .select(
-      "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, status, created_at"
-    )
-    .eq("id", id)
-    .maybeSingle();
+  const { data: listingData, error: listingError } =
+    await obtenerAnuncioPropio(supabase, {
+      listingId: id,
+      userId: user.id,
+      select:
+        "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, status, created_at",
+    });
+
+  const listing = listingData as AnuncioResumen | null;
 
   if (listingError) {
     return (
@@ -70,6 +90,11 @@ export default async function AnuncioCreadoPage({
   if (!listing) {
     notFound();
   }
+
+  const { count: cantidadFotos, error: fotosError } = await supabase
+    .from("listing_photos")
+    .select("id", { count: "exact", head: true })
+    .eq("listing_id", id);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-zinc-50 px-6 py-16 dark:bg-black">
@@ -121,6 +146,25 @@ export default async function AnuncioCreadoPage({
             <dd className="font-medium">{listing.location}</dd>
           </div>
         </dl>
+
+        <div className="flex flex-col gap-2 rounded border border-black/[.15] p-4 text-sm dark:border-white/[.2]">
+          {fotosError ? (
+            <p className="text-red-600" role="alert">
+              No se pudo leer la cantidad de fotos ({fotosError.message}).
+            </p>
+          ) : (
+            <p>
+              <strong>{cantidadFotos ?? 0}</strong> de{" "}
+              <strong>{MINIMO_FOTOS}</strong> fotos mínimas cargadas.
+            </p>
+          )}
+          <Link
+            href={`/vendedor/anuncios/${listing.id}/fotos`}
+            className="font-medium underline"
+          >
+            Subir/gestionar fotos
+          </Link>
+        </div>
 
         <Link
           href="/vendedor/anuncios/nuevo"
