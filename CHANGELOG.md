@@ -44,6 +44,22 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   disponible públicamente en <https://autos-usados-one.vercel.app>. Se
   verificó que la URL pública sirve la misma página que el entorno local,
   sin errores y sin secretos expuestos en el historial de git publicado.
+- **T-05: Registro de usuarios con roles.** Se agregó registro y login de
+  usuarios con Supabase Auth, con sesión manejada vía cookies en Server
+  Components y Server Actions (`lib/supabase/server.ts`, actualización de
+  `lib/supabase/client.ts`, y `proxy.ts`, que refresca la sesión en cada
+  request). Se creó la tabla `profiles`
+  (`supabase/migrations/0004_profiles_and_roles.sql`) con un rol por usuario
+  (comprador, vendedor o moderador, por defecto comprador), asignado
+  automáticamente al registrarse mediante un trigger; las políticas RLS solo
+  permiten a cada usuario leer su propio perfil, y ningún usuario puede
+  auto-promoverse de rol vía API. Se agregaron las páginas de registro
+  (`app/registro`), inicio de sesión (`app/login`) y cuenta (`app/cuenta`,
+  que muestra el email y el rol del usuario, con cierre de sesión). Se
+  incluyó un test de integración contra Supabase real
+  (`supabase/tests/profiles-auth-roles.test.ts`) que verifica la creación
+  automática de perfil, el login, la lectura del propio perfil, el bloqueo
+  de auto-promoción de rol y el aislamiento entre usuarios.
 
 ### Corregido
 

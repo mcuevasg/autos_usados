@@ -44,7 +44,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-05: Registro de usuarios con roles
 
 - **Depende de:** T-04
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** un usuario puede registrarse e iniciar
   sesión vía Supabase Auth, y queda asociado a uno de los roles:
   comprador, vendedor, moderador.

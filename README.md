@@ -52,6 +52,13 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Cuentas de usuario
+
+Los usuarios pueden registrarse y crear una cuenta en `/registro` e iniciar
+sesión en `/login`, usando Supabase Auth. Cada cuenta tiene un rol (comprador,
+vendedor o moderador), asignado automáticamente al registrarse. En `/cuenta`
+el usuario ve su email y su rol, y puede cerrar sesión.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
