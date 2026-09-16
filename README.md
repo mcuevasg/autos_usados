@@ -125,6 +125,14 @@ solicitudes de venta pendientes de aprobación. Al aprobar una solicitud, se
 calcula automáticamente la comisión (5% del precio final acordado), se
 registra en la venta, y el anuncio correspondiente pasa a estado "Vendido".
 
+## Plan Destacado
+
+Desde el resumen de un anuncio propio en estado "Publicado", un vendedor
+concesionario puede activar el plan "Destacado" para ese anuncio. El plan
+dura 30 días desde la activación, y su fecha de expiración se muestra en el
+mismo resumen mientras esté vigente. Esta opción no está disponible para
+vendedores persona natural.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.

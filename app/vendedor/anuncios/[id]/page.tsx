@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { obtenerAnuncioPropio } from "@/lib/listings";
+import { DestacarForm } from "./destacar/destacar-form";
 
 const ETIQUETAS_ESTADO: Record<string, string> = {
   borrador: "Borrador",
@@ -26,6 +27,23 @@ const formateadorPrecio = new Intl.NumberFormat("es-CL", {
 
 const MINIMO_FOTOS = 3;
 
+/**
+ * Determina si el plan destacado sigue vigente (no expirado). Se define
+ * fuera del componente de página, y no inline en el `return`, para
+ * evitar llamar una función impura (`Date.now()`/`new Date()`) durante el
+ * render del Server Component (regla `react-hooks/purity`).
+ */
+function destacadoSigueVigente(
+  featuredActive: boolean,
+  featuredExpiresAt: string | null
+): boolean {
+  if (!featuredActive || featuredExpiresAt === null) {
+    return false;
+  }
+
+  return new Date(featuredExpiresAt).getTime() > Date.now();
+}
+
 type AnuncioResumen = {
   id: string;
   brand: string;
@@ -39,6 +57,8 @@ type AnuncioResumen = {
   papers_up_to_date: boolean;
   status: string;
   created_at: string;
+  featured_active: boolean;
+  featured_expires_at: string | null;
 };
 
 /**
@@ -73,7 +93,7 @@ export default async function AnuncioCreadoPage({
       listingId: id,
       userId: user.id,
       select:
-        "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, papers_up_to_date, status, created_at",
+        "id, brand, model, year, mileage, price, vehicle_condition, usage_type, location, papers_up_to_date, status, created_at, featured_active, featured_expires_at",
     });
 
   const listing = listingData as AnuncioResumen | null;
@@ -96,6 +116,28 @@ export default async function AnuncioCreadoPage({
     .from("listing_photos")
     .select("id", { count: "exact", head: true })
     .eq("listing_id", id);
+
+  // Plan destacado (T-17, REQ-09): función exclusiva de un vendedor
+  // `concesionario`. Se vuelve a consultar `sellers` aquí (no lo devuelve
+  // `obtenerAnuncioPropio`) solo para decidir qué mostrar en la UI; la
+  // protección real e inevitable contra un vendedor persona_natural (o
+  // contra un anuncio no publicado, o contra una fecha de expiración
+  // arbitraria) vive en el trigger
+  // `prevent_unauthorized_featured_activation` (0015_featured_listings.sql)
+  // y se vuelve a validar en servidor en la Server Action `activarDestacado`
+  // (app/vendedor/anuncios/[id]/destacar/actions.ts) antes de tocar la
+  // base de datos.
+  const { data: seller } = await supabase
+    .from("sellers")
+    .select("seller_type")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const esConcesionario = seller?.seller_type === "concesionario";
+  const destacadoVigente = destacadoSigueVigente(
+    listing.featured_active,
+    listing.featured_expires_at
+  );
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-zinc-50 px-6 py-16 dark:bg-black">
@@ -174,6 +216,25 @@ export default async function AnuncioCreadoPage({
             Subir/gestionar fotos
           </Link>
         </div>
+
+        {esConcesionario && listing.status === "publicado" && (
+          <div className="flex flex-col gap-2 rounded border border-black/[.15] p-4 text-sm dark:border-white/[.2]">
+            <h2 className="font-medium">Plan Destacado</h2>
+            {destacadoVigente ? (
+              <p className="text-zinc-600 dark:text-zinc-400">
+                Destacado activo hasta{" "}
+                <strong>
+                  {new Date(listing.featured_expires_at!).toLocaleDateString(
+                    "es-CL"
+                  )}
+                </strong>
+                .
+              </p>
+            ) : (
+              <DestacarForm listingId={listing.id} />
+            )}
+          </div>
+        )}
 
         {listing.status === "publicado" && (
           <Link

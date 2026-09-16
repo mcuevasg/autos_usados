@@ -160,7 +160,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-17: Activación de plan destacado por concesionario
 
 - **Depende de:** T-12
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-09):** un concesionario puede activar el
   plan "Destacado" sobre un anuncio propio en estado "Publicado",
   quedando registrada una fecha de expiración.

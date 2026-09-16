@@ -185,6 +185,17 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/tests/venta-t16.test.ts` y
   `supabase/tests/venta-aprobacion-t16.test.ts`) que cubren el flujo de
   aprobación.
+- **T-17: Activación de plan destacado por concesionario.** Se agregó a
+  `app/vendedor/anuncios/[id]` una sección "Plan Destacado", visible solo
+  para un vendedor concesionario con ese anuncio en estado "Publicado", que
+  permite activar el plan destacado sobre el anuncio. El plan dura 30 días
+  desde la activación; la fecha de expiración la calcula y garantiza la
+  base de datos, sin importar lo que envíe el cliente
+  (`supabase/migrations/0015_featured_listings.sql`), y el trigger
+  correspondiente valida además que quien activa el plan sea un vendedor
+  concesionario y que el anuncio esté publicado. Se incluyó un test de
+  integración contra Supabase real
+  (`supabase/tests/destacar-t17.test.ts`) que cubre este flujo.
 
 ### Corregido
 
@@ -254,4 +265,15 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   completar solo el paso pendiente (el cambio de estado del anuncio), sin
   volver a cobrar comisión, verificado con el test de integración
   `supabase/tests/venta-aprobacion-t16.test.ts`.
+- **T-17: Hallazgo de seguridad en la creación de anuncios con plan
+  destacado.** La protección de activación del plan destacado
+  (`supabase/migrations/0015_featured_listings.sql`) solo se aplicaba al
+  actualizar un anuncio existente, no al crearlo: un vendedor podía insertar
+  un anuncio nuevo directamente ya con `featured_active = true` y una fecha
+  de expiración arbitraria, bypaseando por completo la validación de T-17.
+  Se corrigió neutralizando cualquier intento de crear un anuncio ya
+  destacado
+  (`supabase/migrations/0016_featured_activation_insert_guard.sql`),
+  verificado con el test de integración
+  `supabase/tests/destacar-insert-guard-t17.test.ts`.
 </content>
