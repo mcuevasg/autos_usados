@@ -82,7 +82,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-09: Formulario de creación de anuncio (campos obligatorios básicos)
 
 - **Depende de:** T-08
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-03):** solo un vendedor en estado
   "Verificado" puede crear un anuncio; el formulario exige marca, modelo,
   año, kilometraje y precio, y no permite guardar si falta alguno.

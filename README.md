@@ -71,6 +71,14 @@ que lista los vendedores en estado "pendiente" junto con su documentación de
 respaldo, y permite marcarlos como "Verificado" o "Rechazado". Solo un
 vendedor verificado puede publicar anuncios.
 
+## Publicar un anuncio
+
+Un vendedor con estado "Verificado" puede crear un anuncio en
+`/vendedor/anuncios/nuevo`, indicando marca, modelo, año, kilometraje,
+precio, estado del vehículo, tipo de uso y ubicación. El anuncio queda
+guardado en estado "borrador" y su resumen puede consultarse desde la
+página de confirmación tras crearlo.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.

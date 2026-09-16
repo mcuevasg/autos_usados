@@ -88,6 +88,21 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   incluyó un test de integración contra Supabase real
   (`supabase/tests/moderador-vendedores-t08.test.ts`) que cubre el flujo
   legítimo de moderación.
+- **T-09: Formulario de creación de anuncio (campos obligatorios
+  básicos).** Se agregó la página `app/vendedor/anuncios/nuevo`, con un
+  formulario para crear un anuncio con marca, modelo, año, kilometraje y
+  precio, además de los campos que el esquema exige como obligatorios
+  (estado del vehículo, tipo de uso y ubicación). Solo un vendedor con
+  estado de verificación "verificado" puede acceder al formulario y crear
+  un anuncio; en caso contrario, la página muestra un mensaje según el
+  estado (sin registro, pendiente de revisión, o rechazado). Esta
+  restricción se aplica en tres capas: en la página, en la Server Action
+  que procesa el envío, y mediante la política RLS `listings_insert_own`.
+  El anuncio creado queda en estado "borrador", y
+  `app/vendedor/anuncios/[id]` muestra un resumen simple con los datos
+  guardados. Se incluyó un test de integración contra Supabase real
+  (`supabase/tests/anuncio-nuevo-t09.test.ts`) que cubre el bloqueo por RLS
+  a vendedores no verificados y la validación de los campos requeridos.
 
 ### Corregido
 
