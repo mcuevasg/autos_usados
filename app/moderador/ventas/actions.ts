@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { crearNotificacion } from "@/lib/notifications";
 
 export type AprobarVentaState = {
   error: string | null;
@@ -53,6 +54,54 @@ const PORCENTAJE_COMISION = 0.05;
  */
 function calcularComision(finalPrice: number): number {
   return Math.round(finalPrice * PORCENTAJE_COMISION * 100) / 100;
+}
+
+const formateadorPrecio = new Intl.NumberFormat("es-CL", {
+  style: "currency",
+  currency: "CLP",
+  maximumFractionDigits: 0,
+});
+
+/**
+ * Notifica (T-19) al dueño del anuncio/vendedor que su venta fue
+ * aprobada. Se invoca DESPUÉS de que tanto `sales` como `listings` hayan
+ * quedado en su estado final ('aprobada' / 'vendido'), sea en el flujo
+ * feliz o en el reintento de recuperación (ver comentario de
+ * `aprobarVenta`). Requiere una consulta a `listings` (brand/model/
+ * seller_id) y otra a `sellers` (user_id) porque `sale` solo trae
+ * `listing_id`; ambas lecturas ya están permitidas para un moderador por
+ * `listings_select_moderator` (0010) y `sellers_select_moderator` (0006).
+ * Una notificación fallida no debe bloquear la aprobación de la venta
+ * (ver comentario en lib/notifications.ts).
+ */
+async function notificarVentaAprobada(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  listingId: string,
+  commission: number
+): Promise<void> {
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("brand, model, seller_id")
+    .eq("id", listingId)
+    .maybeSingle();
+
+  if (!listing) return;
+
+  const { data: seller } = await supabase
+    .from("sellers")
+    .select("user_id")
+    .eq("id", listing.seller_id)
+    .maybeSingle();
+
+  if (!seller?.user_id) return;
+
+  await crearNotificacion({
+    userId: seller.user_id,
+    eventType: "sale_approved",
+    message:
+      `Tu venta de ${listing.brand} ${listing.model} fue aprobada. ` +
+      `Comisión: ${formateadorPrecio.format(commission)}.`,
+  });
 }
 
 /**
@@ -117,7 +166,7 @@ export async function aprobarVenta(
 
   const { data: sale, error: saleError } = await supabase
     .from("sales")
-    .select("id, listing_id, final_price, status")
+    .select("id, listing_id, final_price, status, commission")
     .eq("id", saleId)
     .maybeSingle();
 
@@ -175,6 +224,15 @@ export async function aprobarVenta(
           };
         }
 
+        // Recién ahora (recuperación completada) la venta queda
+        // totalmente procesada: notifica al vendedor (T-19). `sale`
+        // trae `commission` porque ya se calculó en el intento anterior.
+        await notificarVentaAprobada(
+          supabase,
+          sale.listing_id,
+          Number(sale.commission)
+        );
+
         revalidatePath("/moderador/ventas");
         revalidatePath("/moderador/anuncios");
 
@@ -218,6 +276,11 @@ export async function aprobarVenta(
         `Reintenta para completar el cambio de estado del anuncio.`,
     };
   }
+
+  // Notifica al vendedor (T-19) DESPUÉS de que ambos updates (sales y
+  // listings) tuvieron éxito. Una notificación fallida no debe bloquear
+  // esta Server Action (ver comentario en lib/notifications.ts).
+  await notificarVentaAprobada(supabase, sale.listing_id, commission);
 
   revalidatePath("/moderador/ventas");
   revalidatePath("/moderador/anuncios");

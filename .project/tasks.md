@@ -179,7 +179,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-19: Notificaciones dentro de la app
 
 - **Depende de:** T-08, T-12, T-16
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** al cambiar el estado de un anuncio, de una
   verificación de vendedor o de una venta, se crea un registro en
   `notifications` para el usuario afectado, visible en la app.

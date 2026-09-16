@@ -57,7 +57,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 Los usuarios pueden registrarse y crear una cuenta en `/registro` e iniciar
 sesión en `/login`, usando Supabase Auth. Cada cuenta tiene un rol (comprador,
 vendedor o moderador), asignado automáticamente al registrarse. En `/cuenta`
-el usuario ve su email y su rol, y puede cerrar sesión.
+el usuario ve su email y su rol, puede cerrar sesión, y ve un link a sus
+notificaciones con un contador de las que aún no ha leído.
 
 Desde `/cuenta`, los usuarios con rol comprador pueden registrarse como
 vendedor en `/vendedor/registro`, indicando si son persona natural o
@@ -140,6 +141,17 @@ mismo resumen mientras esté vigente. Esta opción no está disponible para
 vendedores persona natural. Mientras el plan está vigente, el anuncio recibe
 la etiqueta y la prioridad de posición descritas en la sección "Buscar
 autos"; al expirar, las pierde automáticamente, sin intervención manual.
+
+## Notificaciones
+
+Cualquier usuario con sesión iniciada ve sus notificaciones en
+`/notificaciones`, ordenadas de más reciente a más antigua, con indicación
+visual de las no leídas y la opción de marcarlas como leídas. Se genera una
+notificación automáticamente cuando: un moderador verifica o rechaza un
+vendedor, un moderador cambia el estado de un anuncio, o un moderador
+aprueba una venta (indicando el monto de la comisión). La página `/cuenta`
+enlaza a `/notificaciones` mostrando un contador de las que aún no se han
+leído.
 
 ## Tests
 

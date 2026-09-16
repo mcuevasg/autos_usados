@@ -208,6 +208,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   al expirar la fecha, el anuncio pierde la etiqueta y la prioridad de
   forma automática, sin intervención manual. Se incluyeron tests unitarios
   (`lib/listings.test.ts`) y se verificó el flujo con una integración real.
+- **T-19: Notificaciones dentro de la app.** Se agregó `lib/notifications.ts`
+  (`crearNotificacion`), que registra una notificación para el usuario
+  afectado cuando ocurre un evento relevante generado por un moderador:
+  verificación de un vendedor (aprobado/rechazado), cambio de estado de un
+  anuncio, y aprobación de una venta (incluyendo el monto de la comisión).
+  Se agregó la página `app/notificaciones`, donde cualquier usuario ve sus
+  propias notificaciones ordenadas de más reciente a más antigua, con
+  indicación visual de las no leídas y la opción de marcarlas como leídas;
+  `app/cuenta` ahora enlaza a esta página mostrando un contador de
+  notificaciones sin leer. Se incluyó un test de integración contra
+  Supabase real (`supabase/tests/notificaciones-t19.test.ts`) que cubre la
+  creación de notificaciones desde los tres flujos de moderador, la
+  lectura de las propias y el marcado como leída.
 
 ### Corregido
 

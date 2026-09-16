@@ -20,6 +20,15 @@ export default async function CuentaPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // Conteo de notificaciones no leídas (T-19), solo para mostrar un badge
+  // junto al link "Ver notificaciones". `head: true` evita traer las
+  // filas, solo el `count` (política `notifications_select_own`,
+  // 0002_rls_policies.sql, ya limita esto a las propias del usuario).
+  const { count: notificacionesNoLeidas } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("is_read", false);
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-zinc-50 px-6 py-16 dark:bg-black">
       <div className="flex w-full max-w-sm flex-col gap-4">
@@ -42,6 +51,15 @@ export default async function CuentaPage() {
             migración 0004_profiles_and_roles.sql esté aplicada en Supabase.
           </p>
         )}
+
+        <Link href="/notificaciones" className="text-sm font-medium underline">
+          Ver notificaciones
+          {(notificacionesNoLeidas ?? 0) > 0 && (
+            <span className="ml-2 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white no-underline">
+              {notificacionesNoLeidas}
+            </span>
+          )}
+        </Link>
 
         {profile?.role === "comprador" && (
           <Link

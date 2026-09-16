@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { crearNotificacion } from "@/lib/notifications";
 
 export type ModeradorAnuncioAccionState = {
   error: string | null;
@@ -24,6 +25,16 @@ type EstadoDestino = (typeof ESTADOS_DESTINO)[number];
 function esEstadoDestinoValido(valor: string): valor is EstadoDestino {
   return (ESTADOS_DESTINO as readonly string[]).includes(valor);
 }
+
+// Etiquetas amigables para el mensaje de notificación (T-19); mismos
+// valores que `OPCIONES_ESTADO` en anuncio-acciones.tsx.
+const ETIQUETAS_ESTADO: Record<EstadoDestino, string> = {
+  borrador: "Borrador",
+  publicado: "Publicado",
+  pausado: "Pausado",
+  vendido: "Vendido",
+  rechazado: "Rechazado",
+};
 
 /**
  * Confirma en servidor (no confía en la UI) que el usuario autenticado
@@ -94,10 +105,12 @@ export async function actualizarEstadoAnuncio(
     };
   }
 
-  const { error: updateError } = await supabase
+  const { data: updatedListing, error: updateError } = await supabase
     .from("listings")
     .update({ status: nuevoEstado })
-    .eq("id", listingId);
+    .eq("id", listingId)
+    .select("brand, model, seller_id")
+    .maybeSingle();
 
   if (updateError) {
     if (updateError.message.includes("al menos 3 fotos")) {
@@ -110,6 +123,32 @@ export async function actualizarEstadoAnuncio(
     return {
       error: `No se pudo actualizar el estado del anuncio: ${updateError.message}`,
     };
+  }
+
+  // Notifica al dueño del anuncio (T-19) DESPUÉS de que el cambio de
+  // estado principal haya tenido éxito. `updatedListing` viene del mismo
+  // UPDATE (select("brand, model, seller_id")); resolver el `user_id` del
+  // vendedor sí requiere una consulta adicional a `sellers`
+  // (`listings_select_moderator`/`sellers_select_moderator`,
+  // 0006/0010, ya permiten esta lectura a un moderador). Una notificación
+  // fallida no debe bloquear esta Server Action (ver comentario en
+  // lib/notifications.ts).
+  if (updatedListing?.seller_id) {
+    const { data: seller } = await supabase
+      .from("sellers")
+      .select("user_id")
+      .eq("id", updatedListing.seller_id)
+      .maybeSingle();
+
+    if (seller?.user_id) {
+      await crearNotificacion({
+        userId: seller.user_id,
+        eventType: "listing_status_changed",
+        message:
+          `Tu anuncio ${updatedListing.brand} ${updatedListing.model} ` +
+          `pasó a estado ${ETIQUETAS_ESTADO[nuevoEstado]}.`,
+      });
+    }
   }
 
   revalidatePath("/moderador/anuncios");

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { crearNotificacion } from "@/lib/notifications";
 
 export type ModeradorAccionState = {
   error: string | null;
@@ -77,15 +78,33 @@ export async function actualizarEstadoVendedor(
     };
   }
 
-  const { error: updateError } = await supabase
+  const { data: updatedSeller, error: updateError } = await supabase
     .from("sellers")
     .update({ verification_status: nuevoEstado })
-    .eq("id", sellerId);
+    .eq("id", sellerId)
+    .select("user_id")
+    .maybeSingle();
 
   if (updateError) {
     return {
       error: `No se pudo actualizar el estado del vendedor: ${updateError.message}`,
     };
+  }
+
+  // Notifica al vendedor afectado (T-19) DESPUÉS de que el cambio de
+  // estado principal haya tenido éxito. `updatedSeller` viene del mismo
+  // UPDATE (select("user_id")), sin queries adicionales. Una notificación
+  // fallida no debe bloquear esta Server Action (ver comentario en
+  // lib/notifications.ts).
+  if (updatedSeller?.user_id) {
+    await crearNotificacion({
+      userId: updatedSeller.user_id,
+      eventType: "seller_verification_changed",
+      message:
+        nuevoEstado === "verificado"
+          ? "Tu cuenta de vendedor fue verificada."
+          : "Tu cuenta de vendedor fue rechazada.",
+    });
   }
 
   revalidatePath("/moderador/vendedores");
