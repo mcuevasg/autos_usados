@@ -118,6 +118,13 @@ anuncio permanece "Publicado" mientras la solicitud está pendiente de
 aprobación, y no es posible enviar una nueva solicitud si ya existe una
 pendiente para ese anuncio.
 
+## Aprobar una venta
+
+Los moderadores acceden en `/moderador/ventas` a un panel que lista las
+solicitudes de venta pendientes de aprobación. Al aprobar una solicitud, se
+calcula automáticamente la comisión (5% del precio final acordado), se
+registra en la venta, y el anuncio correspondiente pasa a estado "Vendido".
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.

@@ -174,6 +174,17 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   formulario, si ya existe una solicitud pendiente para ese anuncio. Se
   incluyó un test de integración contra Supabase real
   (`supabase/tests/venta-t15.test.ts`) que cubre este flujo.
+- **T-16: Aprobación de venta y cálculo de comisión.** Se agregó la página
+  `app/moderador/ventas`, donde un moderador ve las solicitudes de venta
+  pendientes de aprobación y puede aprobarlas. Al aprobar, se calcula la
+  comisión (5% del precio final) y se registra en la venta, y el anuncio
+  correspondiente pasa a estado "Vendido". Se agregaron las políticas RLS
+  correspondientes (`supabase/migrations/0014_sales_approval.sql`) para que
+  un moderador pueda leer y actualizar cualquier solicitud de venta. Se
+  incluyeron tests de integración contra Supabase real
+  (`supabase/tests/venta-t16.test.ts` y
+  `supabase/tests/venta-aprobacion-t16.test.ts`) que cubren el flujo de
+  aprobación.
 
 ### Corregido
 
@@ -234,4 +245,13 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   solo lo evitaba una verificación previa no atómica en la Server Action),
   verificado con los tests de integración `venta-t15` y
   `rls-sales-insert-policy`.
+- **T-16: Hallazgo de estado inconsistente al aprobar una venta.** Si el
+  registro de la aprobación de la venta (con la comisión ya calculada)
+  tenía éxito pero el cambio de estado del anuncio a "Vendido" fallaba, el
+  sistema quedaba en un estado inconsistente sin forma de recuperarse: la
+  venta quedaba aprobada con comisión cobrada, pero el anuncio nunca pasaba
+  a "Vendido". Se corrigió la lógica de aprobación para detectar ese caso y
+  completar solo el paso pendiente (el cambio de estado del anuncio), sin
+  volver a cobrar comisión, verificado con el test de integración
+  `supabase/tests/venta-aprobacion-t16.test.ts`.
 </content>

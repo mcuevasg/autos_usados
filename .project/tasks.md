@@ -149,7 +149,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-16: Aprobación de venta y cálculo de comisión
 
 - **Depende de:** T-15
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-08):** un moderador puede aprobar la
   solicitud de venta; al aprobarla, el anuncio pasa a estado "Vendido" y
   el sistema calcula y registra la comisión sobre el precio final
