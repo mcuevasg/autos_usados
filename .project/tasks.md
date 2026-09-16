@@ -25,7 +25,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-03: Desplegar en Vercel
 
 - **Depende de:** T-01
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** la app está desplegada en Vercel (tier
   gratuito) con despliegue automático al hacer push a la rama principal, y
   la URL pública sirve la misma página que en local.

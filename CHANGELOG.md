@@ -38,6 +38,12 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   de integración contra Supabase real
   (`supabase/tests/rls-sales-insert-policy.test.ts`) que valida el
   comportamiento de las políticas de `sales`.
+- **T-03: Despliegue en Vercel.** El repositorio se publicó en GitHub
+  (`mcuevasg/autos_usados`) y se conectó a Vercel para despliegue continuo:
+  cada push a `main` se despliega automáticamente. La aplicación está
+  disponible públicamente en <https://autos-usados-one.vercel.app>. Se
+  verificó que la URL pública sirve la misma página que el entorno local,
+  sin errores y sin secretos expuestos en el historial de git publicado.
 
 ### Corregido
 

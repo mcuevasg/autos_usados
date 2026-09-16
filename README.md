@@ -5,6 +5,9 @@ concesionarios) verificados por RUT publican anuncios comparables entre sí,
 para que los compradores puedan filtrar y comparar ofertas según precio,
 año, kilometraje, estado y uso del vehículo.
 
+La aplicación está desplegada en producción en
+[autos-usados-one.vercel.app](https://autos-usados-one.vercel.app).
+
 Ver `.project/vision.md`, `.project/requeriments.md` y
 `.project/architecture.md` para el detalle de producto y arquitectura.
 
