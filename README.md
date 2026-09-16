@@ -9,7 +9,25 @@ Ver `.project/vision.md`, `.project/requeriments.md` y
 `.project/architecture.md` para el detalle de producto y arquitectura.
 
 Este proyecto está construido con [Next.js](https://nextjs.org), bootstrapeado
-con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app),
+y usa [Supabase](https://supabase.com) como backend (Postgres, Auth, Storage).
+
+## Variables de entorno
+
+El proyecto requiere credenciales de Supabase para funcionar. Copia
+`.env.local.example` a `.env.local` y completa los valores con los datos de
+tu proyecto Supabase (Project Settings > API):
+
+```bash
+cp .env.local.example .env.local
+```
+
+Variables requeridas:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+`.env.local` no se versiona.
 
 ## Getting Started
 

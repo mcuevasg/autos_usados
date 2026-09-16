@@ -16,7 +16,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-02: Crear proyecto Supabase y conectar credenciales
 
 - **Depende de:** T-01
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** el proyecto Supabase (Postgres, Auth,
   Storage) está creado en tier gratuito, y la app Next.js puede conectarse
   a él usando variables de entorno (una llamada de prueba a Supabase desde
