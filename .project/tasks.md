@@ -71,7 +71,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-08: Panel de moderador para aprobar/rechazar vendedores
 
 - **Depende de:** T-07
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-01):** un usuario con rol moderador ve la
   lista de vendedores en estado "Pendiente de revisión" con su
   documentación, y puede cambiar el estado a "Verificado" o "Rechazado".

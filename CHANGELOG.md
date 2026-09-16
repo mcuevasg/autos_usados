@@ -75,6 +75,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   Supabase real (`supabase/tests/vendedor-registro-t07.test.ts`) que
   verifica el aislamiento de documentos por usuario, la validación de RUT
   y el flujo completo de registro.
+- **T-08: Panel de moderador para aprobar/rechazar vendedores.** Se agregó
+  la página `app/moderador/vendedores`, que lista los vendedores en estado
+  "pendiente" junto con su documentación de respaldo (mediante una URL
+  firmada temporal al bucket privado), permitiendo a un moderador marcarlos
+  como "Verificado" o "Rechazado". Se agregaron las políticas RLS
+  correspondientes (`supabase/migrations/0006_moderator_seller_review.sql`)
+  para que un usuario con rol moderador pueda leer y actualizar cualquier
+  registro de `sellers` y leer cualquier documento del bucket
+  `seller-documents`, y se corrigió la política `listings_insert_own` para
+  exigir que el vendedor esté verificado antes de publicar un anuncio. Se
+  incluyó un test de integración contra Supabase real
+  (`supabase/tests/moderador-vendedores-t08.test.ts`) que cubre el flujo
+  legítimo de moderación.
 
 ### Corregido
 
@@ -85,3 +98,13 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   insertada por el vendedor quede en estado `pendiente_aprobacion` y sin
   comisión asignada (`commission is null`)
   (`supabase/migrations/0003_fix_sales_insert_policy.sql`).
+- **T-08: Hallazgos de seguridad en la verificación de vendedores.** Se
+  detectó que un vendedor podía auto-verificarse (cambiar su propio estado
+  a "verificado") mediante un UPDATE directo a `sellers`, y también
+  insertando su registro con un estado distinto de "pendiente" mediante un
+  INSERT directo. Ambos vectores se corrigieron con un trigger que fuerza
+  el estado de verificación a "pendiente" salvo cuando la operación la
+  realiza un moderador
+  (`supabase/migrations/0007_protect_verification_status.sql` y
+  `supabase/migrations/0008_protect_verification_status_insert.sql`),
+  verificados con tests de integración reales contra Supabase.

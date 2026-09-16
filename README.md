@@ -64,6 +64,13 @@ vendedor en `/vendedor/registro`, indicando si son persona natural o
 concesionario, su RUT (validado localmente) y un documento de respaldo. El
 registro queda pendiente de revisión y la cuenta pasa a tener rol vendedor.
 
+## Panel de moderador
+
+Los usuarios con rol moderador acceden en `/moderador/vendedores` a un panel
+que lista los vendedores en estado "pendiente" junto con su documentación de
+respaldo, y permite marcarlos como "Verificado" o "Rechazado". Solo un
+vendedor verificado puede publicar anuncios.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
