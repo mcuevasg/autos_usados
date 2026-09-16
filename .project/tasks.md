@@ -60,7 +60,7 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 ### T-07: Formulario de registro de vendedor (persona natural / concesionario)
 
 - **Depende de:** T-05, T-06
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación (REQ-01, REQ-02):** al registrarse como
   vendedor, el usuario elige tipo (persona natural o concesionario);
   el formulario exige el RUT correspondiente (personal o de empresa) y no

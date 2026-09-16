@@ -59,6 +59,11 @@ sesión en `/login`, usando Supabase Auth. Cada cuenta tiene un rol (comprador,
 vendedor o moderador), asignado automáticamente al registrarse. En `/cuenta`
 el usuario ve su email y su rol, y puede cerrar sesión.
 
+Desde `/cuenta`, los usuarios con rol comprador pueden registrarse como
+vendedor en `/vendedor/registro`, indicando si son persona natural o
+concesionario, su RUT (validado localmente) y un documento de respaldo. El
+registro queda pendiente de revisión y la cuenta pasa a tener rol vendedor.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.

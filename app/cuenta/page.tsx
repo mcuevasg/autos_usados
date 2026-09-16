@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "./actions";
@@ -40,6 +41,15 @@ export default async function CuentaPage() {
             No se pudo leer el perfil ({profileError.message}). Verifica que la
             migración 0004_profiles_and_roles.sql esté aplicada en Supabase.
           </p>
+        )}
+
+        {profile?.role === "comprador" && (
+          <Link
+            href="/vendedor/registro"
+            className="text-sm font-medium underline"
+          >
+            Registrarme como vendedor
+          </Link>
         )}
 
         <form action={cerrarSesion}>

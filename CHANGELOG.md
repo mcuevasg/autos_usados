@@ -60,6 +60,21 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/tests/profiles-auth-roles.test.ts`) que verifica la creación
   automática de perfil, el login, la lectura del propio perfil, el bloqueo
   de auto-promoción de rol y el aislamiento entre usuarios.
+- **T-07: Formulario de registro de vendedor (persona natural /
+  concesionario).** Se agregó la página `app/vendedor/registro`, con un
+  formulario que permite elegir el tipo de vendedor (persona natural o
+  concesionario), valida el RUT ingresado con el validador de T-06 y exige
+  subir un documento de respaldo. Al enviarse, el documento se guarda en un
+  bucket privado de Supabase Storage (`seller-documents`), aislado por
+  usuario mediante políticas RLS por carpeta
+  (`supabase/migrations/0005_seller_documents_storage.sql`); se crea el
+  registro correspondiente en `sellers`, que queda en estado "pendiente"
+  (pendiente de revisión); y el rol de la cuenta se promueve a vendedor.
+  La página `app/cuenta` ahora muestra un link a este registro para las
+  cuentas con rol comprador. Se incluyó un test de integración contra
+  Supabase real (`supabase/tests/vendedor-registro-t07.test.ts`) que
+  verifica el aislamiento de documentos por usuario, la validación de RUT
+  y el flujo completo de registro.
 
 ### Corregido
 
