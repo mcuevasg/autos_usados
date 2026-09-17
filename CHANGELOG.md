@@ -238,6 +238,21 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   verificar un dominio y cambiar el remitente. Se incluyó un test de
   integración contra la API real de Resend
   (`supabase/tests/email-t20.test.ts`), incluyendo un envío real de prueba.
+- **T-21: Fotos de los anuncios en la búsqueda.** La página `app/buscar`
+  ahora muestra, en cada fila del listado comparativo, una miniatura con la
+  foto de portada del anuncio (la de menor posición entre las cargadas),
+  resuelta mediante URLs firmadas de corta duración al bucket privado
+  `listing-photos`. Se agregó el componente `app/buscar/foto-miniatura.tsx`,
+  que muestra un placeholder "Sin foto" cuando el anuncio no tiene fotos o
+  la imagen no puede cargarse, sin romper el diseño de la tabla. Se corrigió
+  además la política de lectura de Storage de `listing_photos`
+  (`supabase/migrations/0017_listing_photos_storage_public_select.sql`) para
+  permitir también a visitantes anónimos ver las fotos de los anuncios
+  publicados, ya que `/buscar` es una página pública y la mayoría de sus
+  visitantes no tienen sesión iniciada. Se incluyó un test de integración
+  contra Supabase real (`supabase/tests/buscar-fotos-t21.test.ts`) que cubre
+  la resolución de la foto de portada, el acceso anónimo y autenticado, y
+  los anuncios sin fotos.
 
 ### Corregido
 
@@ -364,3 +379,16 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   una suite de pruebas (`app/auth/callback/route.test.ts`) con 6 tests que
   cubren el flujo exitoso, códigos inválidos, códigos expirados,
   y errores de servidor, todos pasando y revisados por QA.
+- **T-21: Hallazgo de visibilidad — visitantes anónimos no veían las fotos
+  reales en `/buscar`.** La política `listing_photos_storage_select`
+  (creada en la migración 0009, T-10) solo otorgaba lectura de Storage al
+  rol `authenticated`, por lo que un visitante sin sesión en `/buscar`
+  (la mayoría del tráfico esperado, ya que la página es pública) nunca
+  podía ver las fotos reales de los anuncios publicados, solo el
+  placeholder "Sin foto". Se corrigió agregando el rol `anon` a esa
+  política, con la misma condición de antes (anuncio publicado, o dueño
+  autenticado)
+  (`supabase/migrations/0017_listing_photos_storage_public_select.sql`),
+  verificado con el test de integración
+  `supabase/tests/buscar-fotos-t21.test.ts`.
+</content>

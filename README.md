@@ -109,10 +109,12 @@ indicando que no hay resultados. La página de inicio enlaza directamente a
 `/buscar` y a `/login`.
 
 Los resultados se agrupan automáticamente por marca, modelo y rango de año
-similar, mostrando por cada grupo un listado comparativo con precio, año,
-kilometraje, estado del vehículo, papeles al día, tipo de vendedor (persona
-natural / concesionario) y ubicación de cada anuncio, para facilitar la
-comparación entre ofertas similares.
+similar, mostrando por cada grupo un listado comparativo con una miniatura
+de la foto de portada, precio, año, kilometraje, estado del vehículo,
+papeles al día, tipo de vendedor (persona natural / concesionario) y
+ubicación de cada anuncio, para facilitar la comparación entre ofertas
+similares. Si un anuncio no tiene fotos, o la imagen no puede cargarse, se
+muestra un placeholder "Sin foto" en su lugar.
 
 Los anuncios con plan "Destacado" vigente se muestran con la etiqueta
 "⭐ Destacado" y aparecen primero: tanto dentro de cada grupo comparativo
