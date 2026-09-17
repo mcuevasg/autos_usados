@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { esDestacadoVigente } from "@/lib/listings";
-import { FotoMiniatura } from "./foto-miniatura";
-
-const formateadorPrecio = new Intl.NumberFormat("es-CL", {
-  style: "currency",
-  currency: "CLP",
-  maximumFractionDigits: 0,
-});
+import { AnuncioCard } from "./anuncio-card";
 
 // T-21: vigencia corta de la URL firmada de la foto de portada, igual
 // criterio que `app/vendedor/anuncios/[id]/fotos/page.tsx` y
@@ -347,10 +341,12 @@ export default async function BuscarPage({
   });
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 bg-zinc-50 px-6 py-16 dark:bg-black">
-      <div className="flex w-full max-w-3xl flex-col gap-2">
-        <h1 className="text-2xl font-semibold">Buscar autos</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+    <div className="flex flex-1 flex-col items-center gap-8 bg-background px-6 py-16">
+      <div className="flex w-full max-w-5xl flex-col gap-2">
+        <h1 className="font-display text-heading-1 text-foreground">
+          Buscar autos
+        </h1>
+        <p className="text-body text-foreground-muted">
           Filtra entre los anuncios publicados por marca, modelo, año y
           ubicación. Los resultados se agrupan automáticamente por marca,
           modelo y rango de año similar.
@@ -359,60 +355,60 @@ export default async function BuscarPage({
 
       <form
         method="get"
-        className="flex w-full max-w-3xl flex-col gap-4 rounded border border-black/[.15] p-4 dark:border-white/[.2]"
+        className="flex w-full max-w-5xl flex-col gap-4 rounded-card border border-border bg-surface p-4 shadow-card"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
             Marca
             <input
               type="text"
               name="brand"
               defaultValue={brand}
               placeholder="Ej: Toyota"
-              className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
             Modelo
             <input
               type="text"
               name="model"
               defaultValue={model}
               placeholder="Ej: Yaris"
-              className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
             Año
             <input
               type="number"
               name="year"
               defaultValue={year}
               placeholder="Ej: 2020"
-              className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm">
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
             Ubicación
             <input
               type="text"
               name="location"
               defaultValue={location}
               placeholder="Ej: Santiago"
-              className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
             />
           </label>
         </div>
         <div className="flex gap-3">
           <button
             type="submit"
-            className="rounded bg-foreground px-5 py-2 text-sm font-medium text-background"
+            className="rounded-control bg-primary px-5 py-2 text-body-sm font-medium text-primary-foreground transition duration-200 hover:bg-primary-hover"
           >
             Buscar
           </button>
           <Link
             href="/buscar"
-            className="rounded border border-black/[.15] px-5 py-2 text-sm font-medium dark:border-white/[.2]"
+            className="rounded-control border border-border-strong px-5 py-2 text-body-sm font-medium text-foreground transition duration-200 hover:border-primary"
           >
             Limpiar filtros
           </Link>
@@ -420,28 +416,25 @@ export default async function BuscarPage({
       </form>
 
       {listingsError && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-body-sm text-danger" role="alert">
           Ocurrió un error al buscar anuncios. Intenta nuevamente más
           tarde.
         </p>
       )}
 
       {!listingsError && listings.length === 0 && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-body-sm text-foreground-muted">
           No se encontraron anuncios con esos filtros.
         </p>
       )}
 
       {!listingsError && grupos.length > 0 && (
-        <div className="flex w-full max-w-3xl flex-col gap-8">
+        <div className="flex w-full max-w-5xl flex-col gap-10">
           {grupos.map((grupo) => (
-            <section
-              key={grupo.clave}
-              className="flex flex-col gap-3 rounded border border-black/[.15] p-4 dark:border-white/[.2]"
-            >
-              <h2 className="text-lg font-semibold">
+            <section key={grupo.clave} className="flex flex-col gap-4">
+              <h2 className="font-display text-heading-2 text-foreground">
                 {grupo.brand} {grupo.model}{" "}
-                <span className="font-normal text-zinc-600 dark:text-zinc-400">
+                <span className="font-sans text-body text-foreground-muted">
                   (
                   {grupo.anioMin === grupo.anioMax
                     ? grupo.anioMin
@@ -450,66 +443,27 @@ export default async function BuscarPage({
                 </span>
               </h2>
 
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[640px] border-collapse text-sm">
-                  <thead>
-                    <tr className="border-b border-black/[.15] text-left dark:border-white/[.2]">
-                      <th className="py-2 pr-4">Foto</th>
-                      <th className="py-2 pr-4">Destacado</th>
-                      <th className="py-2 pr-4">Año</th>
-                      <th className="py-2 pr-4">Precio</th>
-                      <th className="py-2 pr-4">Kilometraje</th>
-                      <th className="py-2 pr-4">Estado</th>
-                      <th className="py-2 pr-4">Papeles al día</th>
-                      <th className="py-2 pr-4">Vendedor</th>
-                      <th className="py-2 pr-4">Ubicación</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {grupo.anuncios.map((anuncio) => (
-                      <tr
-                        key={anuncio.id}
-                        className="border-b border-black/[.08] last:border-none dark:border-white/[.1]"
-                      >
-                        <td className="py-2 pr-4">
-                          <FotoMiniatura
-                            url={fotoUrlPorListingId.get(anuncio.id) ?? null}
-                          />
-                        </td>
-                        <td className="py-2 pr-4">
-                          {esDestacadoVigente(anuncio) && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-900/30 dark:text-amber-300">
-                              ⭐ Destacado
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-2 pr-4">{anuncio.year}</td>
-                        <td className="py-2 pr-4">
-                          {formateadorPrecio.format(Number(anuncio.price))}
-                        </td>
-                        <td className="py-2 pr-4">
-                          {anuncio.mileage.toLocaleString("es-CL")} km
-                        </td>
-                        <td className="py-2 pr-4">
-                          {anuncio.vehicle_condition}
-                        </td>
-                        <td className="py-2 pr-4">
-                          {anuncio.papers_up_to_date ? "Sí" : "No"}
-                        </td>
-                        <td className="py-2 pr-4">
-                          {tiposPorSellerId.has(anuncio.seller_id)
-                            ? ETIQUETA_TIPO_VENDEDOR[
-                                tiposPorSellerId.get(
-                                  anuncio.seller_id
-                                ) as SellerType
-                              ]
-                            : "No disponible"}
-                        </td>
-                        <td className="py-2 pr-4">{anuncio.location}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* T-25: grid de cards visuales en vez de tabla HTML. 1
+               * columna en mobile, hasta 3 en desktop; preserva el orden
+               * de `grupo.anuncios` (ya prioriza destacados vigentes,
+               * T-18, y agrupa por similitud, T-14). */}
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {grupo.anuncios.map((anuncio) => (
+                  <AnuncioCard
+                    key={anuncio.id}
+                    anuncio={anuncio}
+                    fotoUrl={fotoUrlPorListingId.get(anuncio.id) ?? null}
+                    tipoVendedorLabel={
+                      tiposPorSellerId.has(anuncio.seller_id)
+                        ? ETIQUETA_TIPO_VENDEDOR[
+                            tiposPorSellerId.get(
+                              anuncio.seller_id
+                            ) as SellerType
+                          ]
+                        : "Vendedor no disponible"
+                    }
+                  />
+                ))}
               </div>
             </section>
           ))}

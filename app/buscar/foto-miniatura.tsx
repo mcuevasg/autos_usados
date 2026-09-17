@@ -3,8 +3,7 @@
 import { useState } from "react";
 
 /**
- * Miniatura de la primera foto de un anuncio en los resultados de
- * búsqueda (T-21).
+ * Foto de portada de un anuncio en los resultados de búsqueda (T-21).
  *
  * Necesita ser un Client Component (a diferencia del resto de
  * `app/buscar/page.tsx`, que es un Server Component) porque el fallback a
@@ -14,6 +13,14 @@ import { useState } from "react";
  * firmada bien generada, si el archivo referenciado en `storage_path` ya
  * no existe en el bucket (ej. se borró manualmente en Storage sin borrar
  * la fila).
+ *
+ * T-25: antes esto era una miniatura fija de 64x64px pensada para una
+ * columna de tabla. Ahora el componente ya no fija su propio tamaño: llena
+ * el 100% del contenedor (`h-full w-full`) y es responsabilidad de quien lo
+ * use (la card de `app/buscar/page.tsx`) definir el tamaño/aspect-ratio a
+ * través de un contenedor con `aspect-*` — así una misma pieza sirve tanto
+ * para una miniatura pequeña como para la imagen dominante de una card
+ * visual, sin duplicar el componente.
  *
  * Se usa `<img>` nativo (no `next/image`): `next.config.ts` no declara
  * `images.remotePatterns` para el dominio de Supabase Storage, así que
@@ -25,7 +32,7 @@ export function FotoMiniatura({ url }: { url: string | null }) {
 
   if (!url || fallo) {
     return (
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded bg-zinc-100 text-center text-[10px] leading-tight text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+      <div className="flex h-full w-full items-center justify-center bg-surface-muted text-center text-body-sm text-foreground-subtle">
         Sin foto
       </div>
     );
@@ -36,7 +43,7 @@ export function FotoMiniatura({ url }: { url: string | null }) {
     <img
       src={url}
       alt="Foto del anuncio"
-      className="h-16 w-16 shrink-0 rounded object-cover"
+      className="h-full w-full object-cover"
       onError={() => setFallo(true)}
     />
   );
