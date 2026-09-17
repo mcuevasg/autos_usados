@@ -291,7 +291,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-26: Página de detalle de anuncio individual
 
 - **Depende de:** T-25
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** existe una ruta de detalle
   (`/anuncio/[id]` o similar) accesible desde cada tarjeta de
   `/buscar`, que muestra galería de todas las fotos del anuncio, todas
