@@ -41,6 +41,11 @@
    * foreground        : texto principal.
    * foreground-muted  : texto secundario (descripciones, labels, metadatos).
    * foreground-subtle : texto terciario (placeholders, ayudas, timestamps).
+   *                     Aunque es el gris más discreto de la escala, cumple
+   *                     WCAG AA (>=4.5:1) sobre background, surface y
+   *                     surface-muted en ambos modos: puede usarse en texto
+   *                     real (ej. "hace 2 días" en text-caption), no solo en
+   *                     decoración.
    * border            : separadores y bordes por defecto.
    * border-strong     : bordes de inputs y de elementos interactivos.
    */
@@ -50,7 +55,7 @@
   --surface-elevated: #ffffff;
   --foreground: #1a1815;
   --foreground-muted: #5c564d;
-  --foreground-subtle: #8a8279;
+  --foreground-subtle: #736d64;
   --border: #e5e1da;
   --border-strong: #d2ccc2;
 
@@ -66,11 +71,18 @@
   --accent-foreground: #2a1a05;
   --accent-soft: #fdf1df;
 
-  /* --- Estados semánticos (feedback de formularios y moderación) ----------- */
+  /* --- Estados semánticos (feedback de formularios y moderación) -----------
+   * Cada par <rol> + <rol>-foreground cumple WCAG AA (>=4.5:1) para texto
+   * normal. El ámbar de `warning` en light es un ámbar quemado y no el ámbar
+   * del acento: necesita esa luminosidad extra para que el texto marrón que va
+   * encima llegue a 4.5:1. Sobre los fondos `<rol>-soft` el texto va en
+   * `foreground` (>=12:1 en ambos modos), nunca en `<rol>` sólido: el par
+   * verificado es siempre `<rol>` + `<rol>-foreground`.
+   */
   --success: #16794f;
   --success-foreground: #ffffff;
   --success-soft: #e3f3eb;
-  --warning: #b4690e;
+  --warning: #c17d0b;
   --warning-foreground: #2a1a05;
   --warning-soft: #fbf0dc;
   --danger: #b3251e;
@@ -101,7 +113,7 @@
     --surface-elevated: #2a2825;
     --foreground: #f2efe9;
     --foreground-muted: #a9a299;
-    --foreground-subtle: #7d766d;
+    --foreground-subtle: #8f887f;
     --border: #2e2c28;
     --border-strong: #413e38;
 
