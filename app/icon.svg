@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Autos Usados Chile">
+  <!-- Marca (T-22): auto de perfil sobre el primario petróleo, ruedas en el
+       acento ámbar. Vectorial para verse nítido en cualquier tamaño de pestaña.
+       Los colores son los mismos tokens definidos en app/globals.css. -->
+  <rect width="32" height="32" rx="7" fill="#0e5a63" />
+  <g fill="#faf9f7">
+    <rect x="4.5" y="15.4" width="23" height="5.8" rx="2.2" />
+    <path d="M9.8 15.8 12.2 10.6H20l3.2 5.2Z" />
+  </g>
+  <g fill="#0e5a63">
+    <path d="M12 14.6 13.6 11.9h2v2.7Z" />
+    <path d="M16.9 11.9h2.3l1.7 2.7h-4Z" />
+    <circle cx="10.8" cy="21" r="3.4" />
+    <circle cx="21.4" cy="21" r="3.4" />
+  </g>
+  <g fill="#f2a94b">
+    <circle cx="10.8" cy="21" r="2.6" />
+    <circle cx="21.4" cy="21" r="2.6" />
+  </g>
+</svg>

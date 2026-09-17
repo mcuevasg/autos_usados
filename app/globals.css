@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================================
+ * Sistema de diseño (T-22)
+ * ----------------------------------------------------------------------------
+ * Fundación visual del marketplace. La idea es que ninguna página vuelva a
+ * escribir colores crudos (`bg-zinc-50 dark:bg-black`, `#383838`, etc.): cada
+ * pantalla debe pedir el token semántico que describe la *intención*
+ * ("esto es una superficie", "esto es texto secundario") y el token resuelve
+ * solo el valor correcto en light y en dark.
+ *
+ * Decisiones de identidad (por qué estos colores):
+ * - Primario petróleo (teal oscuro): transmite confianza/seriedad sin caer en
+ *   el azul corporativo genérico de todos los clasificados. Es el color de las
+ *   acciones principales y de la marca.
+ * - Acento ámbar: color cálido para destacar (planes Destacado, badges,
+ *   llamados secundarios). Da calidez sin competir con el primario.
+ * - Neutros cálidos (no grises puros): el fondo claro es un off-white cálido y
+ *   el oscuro es un gris elevado tipo Material (#121211), nunca negro puro,
+ *   para evitar el contraste duro que cansa la vista en listados largos.
+ *
+ * Convención de nombres:
+ *   <rol>            -> color de fondo/relleno del rol (ej. `bg-primary`)
+ *   <rol>-foreground -> color de texto que va ENCIMA de ese fondo
+ *   <rol>-soft       -> versión tenue del rol, para fondos de badges/alertas
+ *   <rol>-hover      -> estado hover del rol
+ * ========================================================================== */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  /* Permite que controles nativos (scrollbars, inputs) sigan el esquema. */
+  color-scheme: light dark;
+
+  /* --- Superficies y texto -------------------------------------------------
+   * background        : lienzo de la página (lo más al fondo).
+   * surface           : tarjetas, paneles, barras; "flota" sobre background.
+   * surface-muted     : zonas de menor jerarquía dentro de una tarjeta
+   *                     (encabezados de tabla, filtros, estados vacíos).
+   * surface-elevated  : elementos que realmente se despegan (dropdowns,
+   *                     modales, header sticky); en dark es más claro, no más
+   *                     oscuro, porque en dark la elevación se expresa con luz.
+   * foreground        : texto principal.
+   * foreground-muted  : texto secundario (descripciones, labels, metadatos).
+   * foreground-subtle : texto terciario (placeholders, ayudas, timestamps).
+   * border            : separadores y bordes por defecto.
+   * border-strong     : bordes de inputs y de elementos interactivos.
+   */
+  --background: #faf9f7;
+  --surface: #ffffff;
+  --surface-muted: #f2f0ec;
+  --surface-elevated: #ffffff;
+  --foreground: #1a1815;
+  --foreground-muted: #5c564d;
+  --foreground-subtle: #8a8279;
+  --border: #e5e1da;
+  --border-strong: #d2ccc2;
+
+  /* --- Marca: primario (acciones principales, links, header) --------------- */
+  --primary: #0e5a63;
+  --primary-hover: #0a464d;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e2efef;
+
+  /* --- Marca: acento cálido (destacados, promociones, badges premium) ------ */
+  --accent: #e8912b;
+  --accent-hover: #d07f1e;
+  --accent-foreground: #2a1a05;
+  --accent-soft: #fdf1df;
+
+  /* --- Estados semánticos (feedback de formularios y moderación) ----------- */
+  --success: #16794f;
+  --success-foreground: #ffffff;
+  --success-soft: #e3f3eb;
+  --warning: #b4690e;
+  --warning-foreground: #2a1a05;
+  --warning-soft: #fbf0dc;
+  --danger: #b3251e;
+  --danger-foreground: #ffffff;
+  --danger-soft: #fbe9e7;
+
+  /* Anillo de foco: accesibilidad, siempre visible sobre cualquier superficie. */
+  --ring: #0e5a63;
+
+  /* --- Sombras ------------------------------------------------------------
+   * Son tokens (y no utilidades sueltas) porque en dark las sombras deben ser
+   * más profundas y menos difusas para seguir leyéndose sobre gris oscuro.
+   */
+  --elevation-card: 0 1px 2px rgb(26 24 21 / 0.04),
+    0 4px 12px rgb(26 24 21 / 0.06);
+  --elevation-card-hover: 0 2px 4px rgb(26 24 21 / 0.06),
+    0 12px 24px rgb(26 24 21 / 0.1);
+  --elevation-overlay: 0 8px 32px rgb(26 24 21 / 0.16);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode real: grises cálidos elevados, nunca #000. Cada nivel de
+     * superficie sube en luminancia para que la jerarquía se mantenga. */
+    --background: #121211;
+    --surface: #1a1917;
+    --surface-muted: #22211e;
+    --surface-elevated: #2a2825;
+    --foreground: #f2efe9;
+    --foreground-muted: #a9a299;
+    --foreground-subtle: #7d766d;
+    --border: #2e2c28;
+    --border-strong: #413e38;
+
+    /* El teal oscuro no contrasta sobre fondo oscuro: en dark el primario se
+     * aclara y su texto encima pasa a ser oscuro. */
+    --primary: #4fb3b8;
+    --primary-hover: #6fc9cd;
+    --primary-foreground: #06282b;
+    --primary-soft: #16302f;
+
+    --accent: #f2a94b;
+    --accent-hover: #f7bc6e;
+    --accent-foreground: #2a1a05;
+    --accent-soft: #33260f;
+
+    --success: #4fc08d;
+    --success-foreground: #06231a;
+    --success-soft: #12291f;
+    --warning: #e9a93c;
+    --warning-foreground: #2a1a05;
+    --warning-soft: #33260f;
+    --danger: #f0736a;
+    --danger-foreground: #2a0e0c;
+    --danger-soft: #35191a;
+
+    --ring: #4fb3b8;
+
+    --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.32);
+    --elevation-card-hover: 0 2px 4px rgb(0 0 0 / 0.45),
+      0 12px 24px rgb(0 0 0 / 0.4);
+    --elevation-overlay: 0 8px 32px rgb(0 0 0 / 0.55);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  /* --- Colores -------------------------------------------------------------
+   * `inline` hace que las utilidades referencien la variable (no su valor), por
+   * eso un mismo `bg-surface` cambia solo al pasar a dark mode.
+   */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-ring: var(--ring);
+
+  /* --- Tipografía ----------------------------------------------------------
+   * Dos familias variables con roles distintos:
+   * - `font-display` (Plus Jakarta Sans): títulos y precios. Geométrica y con
+   *   personalidad, sostiene la marca.
+   * - `font-sans` (Inter): texto corrido, formularios y fichas técnicas.
+   *   Está optimizada para leer datos densos (km, año, patente) en tamaños
+   *   chicos, que es el 90% de este producto.
+   * - `font-mono`: solo datos tabulares/códigos si hiciera falta.
+   */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-jakarta);
+  --font-mono: var(--font-geist-mono);
+
+  /* --- Escala tipográfica --------------------------------------------------
+   * Escala propia y semántica, POR ENCIMA de la escala por defecto de Tailwind
+   * (text-sm, text-base, ... siguen existiendo sin cambios para no romper las
+   * páginas actuales). Cada token ya trae line-height, tracking y peso, así que
+   * un heading correcto es una sola clase.
+   *
+   *   text-display-lg -> hero de la landing (solo uno por página)
+   *   text-display    -> hero secundario / cabecera de sección grande
+   *   text-heading-1  -> título de página (<h1>)
+   *   text-heading-2  -> título de sección (<h2>)
+   *   text-heading-3  -> título de tarjeta o subsección (<h3>)
+   *   text-body-lg    -> bajada/lead bajo un título
+   *   text-body       -> texto corrido por defecto
+   *   text-body-sm    -> texto secundario, labels de formulario
+   *   text-caption    -> metadatos, badges, ayudas (va en mayúsculas o muted)
+   */
+  --text-display-lg: 3.5rem;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.032em;
+  --text-display-lg--font-weight: 700;
+
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.028em;
+  --text-display--font-weight: 700;
+
+  --text-heading-1: 2rem;
+  --text-heading-1--line-height: 1.18;
+  --text-heading-1--letter-spacing: -0.022em;
+  --text-heading-1--font-weight: 700;
+
+  --text-heading-2: 1.5rem;
+  --text-heading-2--line-height: 1.25;
+  --text-heading-2--letter-spacing: -0.016em;
+  --text-heading-2--font-weight: 600;
+
+  --text-heading-3: 1.125rem;
+  --text-heading-3--line-height: 1.35;
+  --text-heading-3--letter-spacing: -0.01em;
+  --text-heading-3--font-weight: 600;
+
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.01em;
+
+  /* --- Radios --------------------------------------------------------------
+   * rounded-card    -> tarjetas de anuncio y paneles
+   * rounded-control -> inputs, selects y botones rectangulares
+   * rounded-pill    -> botones/badges tipo píldora (estilo ya usado en el repo)
+   */
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+  --radius-pill: 9999px;
+
+  /* --- Sombras -------------------------------------------------------------
+   * shadow-card       -> reposo de una tarjeta
+   * shadow-card-hover -> hover de una tarjeta clickeable
+   * shadow-overlay    -> dropdowns, modales, popovers
+   */
+  --shadow-card: var(--elevation-card);
+  --shadow-card-hover: var(--elevation-card-hover);
+  --shadow-overlay: var(--elevation-overlay);
+}
+
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    /* El boilerplate forzaba Arial y anulaba las fuentes cargadas por
+     * next/font; ahora el body usa la familia del sistema de diseño. */
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Los títulos usan la familia display por defecto, sin tener que repetir
+   * `font-display` en cada página (las utilidades siguen pudiendo anularla). */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), var(--font-sans), ui-sans-serif, sans-serif;
+  }
+
+  /* Foco visible y consistente en toda la app (accesibilidad por teclado). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
