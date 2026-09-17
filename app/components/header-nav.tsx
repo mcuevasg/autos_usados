@@ -5,33 +5,9 @@ import Link from "next/link";
 import { cerrarSesion } from "@/app/cuenta/actions";
 
 type HeaderNavProps = {
-  /** Email del usuario logueado, o `null` si es un visitante anónimo. */
-  userEmail: string | null;
+  /** `true` si hay una sesión activa; `false` si es un visitante anónimo. */
+  estaLogueado: boolean;
 };
-
-/**
- * Enlaces de navegación en formato de link de texto, usados tanto en el
- * nav de escritorio como en el panel mobile (evita repetir clases).
- */
-function EnlaceNav({
-  href,
-  onClick,
-  children,
-}: {
-  href: string;
-  onClick?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="rounded-control px-1 text-body-sm font-medium text-foreground-muted transition-colors hover:text-foreground md:px-0"
-    >
-      {children}
-    </Link>
-  );
-}
 
 function IconoMenu() {
   return (
@@ -68,85 +44,48 @@ function IconoCerrar() {
 }
 
 /**
- * Header/navegación global persistente (T-23), renderizado desde
- * `app/layout.tsx` en todas las páginas.
+ * Botón hamburguesa + panel mobile colapsable del header global (T-23).
  *
- * Reglas de contenido:
- * - Logo/nombre del sitio, siempre visible, enlaza a `/`.
- * - Enlace a `/buscar`, siempre visible (comprar es la acción principal).
- * - Estado de sesión: si `userEmail` es `null` se muestran los enlaces
- *   "Ingresar" y "Vender / Registrarme" (login/registro); si hay sesión,
- *   se reemplazan por "Mi cuenta" y "Cerrar sesión" (Server Action
- *   `cerrarSesion`, la misma que ya usa `app/cuenta/page.tsx`).
+ * `app/components/site-header.tsx` renderiza el logo, el link "Buscar" y el
+ * nav de escritorio directamente (son estáticos o streamean por su cuenta);
+ * `HeaderNav` solo se encarga de la parte que necesita estado local
+ * (`useState` del menú mobile, por eso es Client Component) y de mostrar,
+ * dentro del panel, los mismos enlaces de sesión que el nav de escritorio:
+ * si `estaLogueado` es `false` se muestran "Ingresar" y "Vender /
+ * Registrarme"; si es `true`, "Mi cuenta" y "Cerrar sesión" (Server Action
+ * `cerrarSesion`, la misma que ya usa `app/cuenta/page.tsx`).
  *
- * En mobile el nav colapsa en un botón hamburguesa que despliega un panel
- * con los mismos enlaces apilados (Client Component por el `useState` del
- * menú).
+ * `estaLogueado` llega ya resuelto (booleano, no una promesa ni el email):
+ * `site-header.tsx` lo calcula en un Server Component async y solo pasa el
+ * booleano, así el email del usuario (PII) nunca viaja al navegador.
+ *
+ * El panel se posiciona con `absolute` (en vez de depender de ser hermano
+ * de `<header>` en el DOM) porque ahora vive anidado dentro del layout de
+ * `site-header.tsx`; `<header>` es `relative`, así que el panel igual
+ * aparece como una franja completa debajo del header.
  */
-export function HeaderNav({ userEmail }: HeaderNavProps) {
+export function HeaderNav({ estaLogueado }: HeaderNavProps) {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const estaLogueado = userEmail !== null;
   const cerrarMenu = () => setMenuAbierto(false);
 
   return (
-    <header className="border-b border-border bg-surface">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link
-          href="/"
-          onClick={cerrarMenu}
-          className="shrink-0 text-heading-3 font-display text-foreground"
-        >
-          Autos Usados Chile
-        </Link>
+    <>
+      <button
+        type="button"
+        onClick={() => setMenuAbierto((valor) => !valor)}
+        aria-expanded={menuAbierto}
+        aria-controls="menu-mobile"
+        aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-strong text-foreground md:hidden"
+      >
+        {menuAbierto ? <IconoCerrar /> : <IconoMenu />}
+      </button>
 
-        {/* Nav de escritorio: oculto en mobile, visible desde md. */}
-        <nav aria-label="Principal" className="hidden items-center gap-6 md:flex">
-          <EnlaceNav href="/buscar">Buscar</EnlaceNav>
-
-          {estaLogueado ? (
-            <>
-              <EnlaceNav href="/cuenta">Mi cuenta</EnlaceNav>
-              <form action={cerrarSesion}>
-                <button
-                  type="submit"
-                  className="rounded-pill border border-border-strong px-4 py-2 text-body-sm font-medium text-foreground transition-colors hover:bg-surface-muted"
-                >
-                  Cerrar sesión
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <EnlaceNav href="/login">Ingresar</EnlaceNav>
-              <Link
-                href="/registro"
-                className="rounded-pill bg-primary px-4 py-2 text-body-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
-              >
-                Vender / Registrarme
-              </Link>
-            </>
-          )}
-        </nav>
-
-        {/* Botón hamburguesa: solo en mobile, controla el panel de abajo. */}
-        <button
-          type="button"
-          onClick={() => setMenuAbierto((valor) => !valor)}
-          aria-expanded={menuAbierto}
-          aria-controls="menu-mobile"
-          aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-strong text-foreground md:hidden"
-        >
-          {menuAbierto ? <IconoCerrar /> : <IconoMenu />}
-        </button>
-      </div>
-
-      {/* Panel mobile colapsable: mismos enlaces, apilados. */}
       {menuAbierto && (
         <nav
           id="menu-mobile"
           aria-label="Principal (mobile)"
-          className="flex flex-col gap-1 border-t border-border px-4 py-3 md:hidden"
+          className="absolute inset-x-0 top-full z-20 flex flex-col gap-1 border-t border-border bg-surface px-4 py-3 md:hidden"
         >
           <Link
             href="/buscar"
@@ -194,6 +133,6 @@ export function HeaderNav({ userEmail }: HeaderNavProps) {
           )}
         </nav>
       )}
-    </header>
+    </>
   );
 }
