@@ -3,8 +3,12 @@
 import { useActionState } from "react";
 import {
   actualizarEstadoAnuncio,
-  initialModeradorAnuncioAccionState,
+  type ModeradorAnuncioAccionState,
 } from "./actions";
+
+const initialModeradorAnuncioAccionState: ModeradorAnuncioAccionState = {
+  error: null,
+};
 
 const OPCIONES_ESTADO: { value: string; label: string }[] = [
   { value: "borrador", label: "Borrador" },

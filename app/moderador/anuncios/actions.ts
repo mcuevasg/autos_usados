@@ -9,11 +9,6 @@ export type ModeradorAnuncioAccionState = {
   error: string | null;
 };
 
-export const initialModeradorAnuncioAccionState: ModeradorAnuncioAccionState =
-  {
-    error: null,
-  };
-
 const ESTADOS_DESTINO = [
   "borrador",
   "publicado",

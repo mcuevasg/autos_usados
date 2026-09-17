@@ -7,10 +7,6 @@ export type DestacarFormState = {
   error: string | null;
 };
 
-export const initialDestacarFormState: DestacarFormState = {
-  error: null,
-};
-
 /**
  * Server Action de activación del plan "Destacado" sobre un anuncio propio
  * (T-17, REQ-09). El plan dura 30 días desde la activación.

@@ -8,10 +8,6 @@ export type FotosFormState = {
   error: string | null;
 };
 
-export const initialFotosFormState: FotosFormState = {
-  error: null,
-};
-
 /**
  * Confirma en servidor (no confía en la UI) que el listing pertenece a un
  * seller del usuario autenticado. Devuelve el user si corresponde, o null

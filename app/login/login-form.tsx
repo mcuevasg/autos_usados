@@ -2,7 +2,9 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { initialLoginState, iniciarSesion } from "./actions";
+import { iniciarSesion, type LoginState } from "./actions";
+
+const initialLoginState: LoginState = { error: null };
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(

@@ -21,11 +21,6 @@ export type AnuncioFormState = {
   >;
 };
 
-export const initialAnuncioFormState: AnuncioFormState = {
-  error: null,
-  fieldErrors: {},
-};
-
 const USAGE_TYPES_VALIDOS = [
   "familiar",
   "trabajo",

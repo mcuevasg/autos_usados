@@ -8,8 +8,6 @@ export type RegistroState = {
   message: string | null;
 };
 
-export const initialRegistroState: RegistroState = { error: null, message: null };
-
 /**
  * Server Action de registro (T-05). Crea el usuario en Supabase Auth vía
  * `auth.signUp`. El rol ('comprador' por defecto) se asigna del lado del

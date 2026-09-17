@@ -3,8 +3,10 @@
 import { useActionState } from "react";
 import {
   actualizarEstadoVendedor,
-  initialModeradorAccionState,
+  type ModeradorAccionState,
 } from "./actions";
+
+const initialModeradorAccionState: ModeradorAccionState = { error: null };
 
 /**
  * Botones "Verificar" / "Rechazar" para una fila del panel de moderador

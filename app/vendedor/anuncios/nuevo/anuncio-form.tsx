@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  crearAnuncio,
-  initialAnuncioFormState,
-  type AnuncioFormState,
-} from "./actions";
+import { crearAnuncio, type AnuncioFormState } from "./actions";
+
+const initialAnuncioFormState: AnuncioFormState = {
+  error: null,
+  fieldErrors: {},
+};
 
 const USAGE_TYPE_OPCIONES: { value: string; label: string }[] = [
   { value: "familiar", label: "Familiar" },

@@ -241,6 +241,40 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ### Corregido
 
+- **🚨 CRÍTICO — Ningún formulario funcionaba en producción (registro,
+  login y prácticamente todas las Server Actions del proyecto).** Se
+  detectó y corrigió un bug crítico transversal que afectaba a la
+  aplicación ya desplegada en Vercel: al enviar cualquier formulario del
+  sitio (registro, login, creación de anuncio, subida de fotos,
+  solicitud/aprobación de venta, activación de plan destacado, paneles de
+  moderador, notificaciones, etc.) la Server Action correspondiente
+  devolvía un error 500 real, dejando la aplicación en producción
+  completamente inutilizable de punta a punta desde que estas
+  funcionalidades se agregaron. **Causa raíz:** desde T-05, cada archivo de
+  Server Actions (`"use server"`) del proyecto exportaba, además de sus
+  funciones `async`, una constante `initial*State` (el estado inicial
+  usado por `useActionState` en el formulario cliente); Next.js exige que
+  un archivo `"use server"` solo exporte funciones `async`, y este patrón,
+  aunque funcionaba sin problema en desarrollo (`npm run dev`) y no lo
+  detectaba `npm run build` (por tratarse de un error de runtime y no de
+  compilación), provocaba un crash real al ejecutar la Server Action en
+  producción (`npm run start` / Vercel). El problema pasó inadvertido
+  durante 16 tareas porque ningún flujo de trabajo previo había probado
+  los formularios contra un build de producción real. Se corrigió moviendo
+  la constante `initial*State` de cada archivo de servidor a su componente
+  cliente correspondiente (que ya la consumía), dejando en el archivo
+  `"use server"` únicamente los `export type` (se eliminan en la
+  compilación, por lo que no cuentan para la regla) y las funciones
+  `export async function`. Se corrigieron los 11 pares de archivos
+  afectados: `app/login`, `app/registro`, `app/vendedor/registro`,
+  `app/vendedor/anuncios/nuevo`, `app/vendedor/anuncios/[id]/fotos` (dos
+  componentes cliente), `app/vendedor/anuncios/[id]/destacar`,
+  `app/vendedor/anuncios/[id]/venta`, `app/moderador/vendedores`,
+  `app/moderador/anuncios`, `app/moderador/ventas` y
+  `app/notificaciones`. Se verificó la corrección con Playwright contra un
+  build de producción real (`npm run build && npm run start`), confirmando
+  que `/registro` y `/login` (y, por extensión, el resto de las Server
+  Actions del proyecto) ya no devuelven error 500.
 - **T-04: Hallazgo de seguridad en la política de inserción de `sales`.**
   La política `sales_insert_own` permitía originalmente que un vendedor
   insertara una venta ya en estado "aprobado" con una comisión arbitraria,

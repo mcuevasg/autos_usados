@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { borrarFoto, initialFotosFormState } from "./actions";
+import { borrarFoto, type FotosFormState } from "./actions";
+
+const initialFotosFormState: FotosFormState = { error: null };
 
 /**
  * Preview de una foto ya subida, con botón para borrarla (buena práctica

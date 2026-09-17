@@ -1,11 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  solicitarVenta,
-  initialVentaFormState,
-  type VentaFormState,
-} from "./actions";
+import { solicitarVenta, type VentaFormState } from "./actions";
+
+const initialVentaFormState: VentaFormState = { error: null };
 
 /**
  * Formulario de solicitud de venta concretada de un anuncio (T-15).

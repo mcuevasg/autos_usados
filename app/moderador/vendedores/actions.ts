@@ -8,10 +8,6 @@ export type ModeradorAccionState = {
   error: string | null;
 };
 
-export const initialModeradorAccionState: ModeradorAccionState = {
-  error: null,
-};
-
 const ESTADOS_DESTINO = ["verificado", "rechazado"] as const;
 type EstadoDestino = (typeof ESTADOS_DESTINO)[number];
 

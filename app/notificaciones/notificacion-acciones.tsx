@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { marcarLeida, initialMarcarLeidaState } from "./actions";
+import { marcarLeida, type MarcarLeidaState } from "./actions";
+
+const initialMarcarLeidaState: MarcarLeidaState = { error: null };
 
 /**
  * Botón "Marcar como leída" para una notificación no leída (T-19).

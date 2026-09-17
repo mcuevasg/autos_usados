@@ -9,10 +9,6 @@ export type AprobarVentaState = {
   error: string | null;
 };
 
-export const initialAprobarVentaState: AprobarVentaState = {
-  error: null,
-};
-
 /**
  * Confirma en servidor (no confía en la UI) que el usuario autenticado
  * tiene `profiles.role === 'moderador'`. Devuelve el user autenticado si

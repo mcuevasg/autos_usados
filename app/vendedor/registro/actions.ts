@@ -10,10 +10,6 @@ export type VendedorRegistroState = {
   error: string | null;
 };
 
-export const initialVendedorRegistroState: VendedorRegistroState = {
-  error: null,
-};
-
 const TIPOS_VENDEDOR_VALIDOS = ["persona_natural", "concesionario"] as const;
 type TipoVendedor = (typeof TIPOS_VENDEDOR_VALIDOS)[number];
 

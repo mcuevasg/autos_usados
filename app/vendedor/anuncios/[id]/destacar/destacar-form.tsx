@@ -1,11 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  activarDestacado,
-  initialDestacarFormState,
-  type DestacarFormState,
-} from "./actions";
+import { activarDestacado, type DestacarFormState } from "./actions";
+
+const initialDestacarFormState: DestacarFormState = { error: null };
 
 /**
  * Formulario (sin campos, solo un botón de confirmación) de activación del

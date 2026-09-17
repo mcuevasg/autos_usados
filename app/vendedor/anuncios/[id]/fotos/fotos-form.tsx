@@ -1,11 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  subirFotos,
-  initialFotosFormState,
-  type FotosFormState,
-} from "./actions";
+import { subirFotos, type FotosFormState } from "./actions";
+
+const initialFotosFormState: FotosFormState = { error: null };
 
 /**
  * Formulario de subida de fotos de un anuncio (T-10).

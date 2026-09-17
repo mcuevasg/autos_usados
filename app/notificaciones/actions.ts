@@ -7,10 +7,6 @@ export type MarcarLeidaState = {
   error: string | null;
 };
 
-export const initialMarcarLeidaState: MarcarLeidaState = {
-  error: null,
-};
-
 /**
  * Server Action (T-19): marca una notificación propia como leída.
  *

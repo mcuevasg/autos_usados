@@ -7,8 +7,6 @@ export type LoginState = {
   error: string | null;
 };
 
-export const initialLoginState: LoginState = { error: null };
-
 /**
  * Server Action de login (T-05): usa `auth.signInWithPassword`. La
  * sesión resultante queda en cookies (via @supabase/ssr), por lo que

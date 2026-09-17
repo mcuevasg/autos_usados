@@ -2,7 +2,9 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { initialRegistroState, registrarUsuario } from "./actions";
+import { registrarUsuario, type RegistroState } from "./actions";
+
+const initialRegistroState: RegistroState = { error: null, message: null };
 
 export function RegistroForm() {
   const [state, formAction, isPending] = useActionState(

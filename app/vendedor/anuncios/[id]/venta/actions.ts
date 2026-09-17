@@ -7,10 +7,6 @@ export type VentaFormState = {
   error: string | null;
 };
 
-export const initialVentaFormState: VentaFormState = {
-  error: null,
-};
-
 /**
  * Server Action de solicitud de venta concretada (T-15, REQ-08).
  *

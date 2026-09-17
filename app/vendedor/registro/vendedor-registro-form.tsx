@@ -2,10 +2,9 @@
 
 import { useActionState, useState } from "react";
 import { validarRut } from "@/lib/rut";
-import {
-  initialVendedorRegistroState,
-  registrarVendedor,
-} from "./actions";
+import { registrarVendedor, type VendedorRegistroState } from "./actions";
+
+const initialVendedorRegistroState: VendedorRegistroState = { error: null };
 
 /**
  * Formulario de registro de vendedor (T-07).

@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { aprobarVenta, initialAprobarVentaState } from "./actions";
+import { aprobarVenta, type AprobarVentaState } from "./actions";
+
+const initialAprobarVentaState: AprobarVentaState = { error: null };
 
 /**
  * Botón "Aprobar venta" para una fila del panel de moderador de ventas
