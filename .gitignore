@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# MCP config (contiene tokens de acceso personal)
+.mcp.json
+
 # supabase CLI cache
 /supabase/.temp
 
