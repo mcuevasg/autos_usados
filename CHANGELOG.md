@@ -352,4 +352,15 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/migrations/0016_featured_activation_insert_guard.sql`),
   verificado con el test de integración
   `supabase/tests/destacar-insert-guard-t17.test.ts`.
-</content>
+- **Callback de verificación de email en Supabase.** Se creó la ruta
+  `/app/auth/callback/route.ts` para completar el flujo de verificación de
+  email en Supabase Auth, que estaba roto. La ruta intercambia un código de
+  verificación por una sesión válida y redirige al usuario al dashboard.
+  Incluye validación robusta del código: trim de espacios en blanco, límite
+  de 128 caracteres y regex que valida únicamente caracteres alfanuméricos y
+  guiones. Implementa manejo seguro de errores con redirecciones apropiadas
+  según el resultado (éxito, código inválido/expirado, o error del servidor).
+  Se incluyó documentación JSDoc completa explicando cada paso del flujo y
+  una suite de pruebas (`app/auth/callback/route.test.ts`) con 6 tests que
+  cubren el flujo exitoso, códigos inválidos, códigos expirados,
+  y errores de servidor, todos pasando y revisados por QA.

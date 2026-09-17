@@ -11,10 +11,15 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code");
+  const code = searchParams.get("code")?.trim() || null;
 
   // Validar presencia y formato del código
-  if (!code || typeof code !== "string" || code.length > 256) {
+  if (
+    !code ||
+    typeof code !== "string" ||
+    code.length > 128 ||
+    !/^[a-zA-Z0-9_-]{20,128}$/.test(code)
+  ) {
     return NextResponse.redirect(
       new URL("/login?error=invalid_code", request.url)
     );
