@@ -130,12 +130,14 @@ ningún anuncio coincide con los filtros aplicados, se muestra un mensaje
 indicando que no hay resultados.
 
 Los resultados se agrupan automáticamente por marca, modelo y rango de año
-similar, mostrando por cada grupo un listado comparativo con una miniatura
-de la foto de portada, precio, año, kilometraje, estado del vehículo,
-papeles al día, tipo de vendedor (persona natural / concesionario) y
-ubicación de cada anuncio, para facilitar la comparación entre ofertas
-similares. Si un anuncio no tiene fotos, o la imagen no puede cargarse, se
-muestra un placeholder "Sin foto" en su lugar.
+similar, mostrando por cada grupo un grid de tarjetas visuales (1 columna en
+mobile, hasta 3 en desktop) para facilitar la comparación entre ofertas
+similares. Cada tarjeta muestra la foto de portada como imagen dominante,
+el precio en tipografía destacada, y specs con iconografía (año,
+kilometraje, estado del vehículo, papeles al día), además del tipo de
+vendedor (persona natural / concesionario) y la ubicación. Si un anuncio no
+tiene fotos, o la imagen no puede cargarse, se muestra un placeholder "Sin
+foto" en su lugar.
 
 Los anuncios con plan "Destacado" vigente se muestran con la etiqueta
 "⭐ Destacado" y aparecen primero: tanto dentro de cada grupo comparativo

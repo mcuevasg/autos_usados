@@ -320,6 +320,30 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `app/components/landing-datos.test.tsx`) que cubren la agregación, los
   casos de respaldo, el singular/plural en los textos y el encoding de las
   URLs de búsqueda por marca.
+- **T-25: Cards visuales en resultados de búsqueda.** Se reemplazó la
+  tabla HTML de `/buscar` (usada desde T-13) por un grid de tarjetas
+  visuales (`app/buscar/anuncio-card.tsx`), siguiendo el lenguaje visual
+  de mercado (Kavak, Cars.com, CarGurus): imagen de portada dominante con
+  aspect-ratio fijo (evita saltos de layout entre cards con foto real y
+  con placeholder), precio prominente en tipografía display, badge "⭐
+  Destacado" superpuesto sobre la imagen (usando `bg-accent-soft` del
+  sistema de diseño de T-22 en vez del ámbar hardcodeado anterior, y
+  condicionado siempre a `esDestacadoVigente` de T-18, nunca a
+  `featured_active` crudo), y specs con iconografía simple vía emojis
+  (año, kilometraje, estado del vehículo, papeles al día) más tipo de
+  vendedor y ubicación. El grid es responsive:
+  `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`. No se tocó ninguna lógica
+  de datos: la consulta a `listings`, la resolución de fotos de portada
+  vía URLs firmadas (T-21), la agrupación por similitud (T-14) y la
+  prioridad de destacados vigentes (T-18) siguen exactamente igual, solo
+  cambió cómo se renderiza cada anuncio. `app/buscar/foto-miniatura.tsx`
+  se adaptó para llenar el 100% de su contenedor (antes tenía un tamaño
+  fijo de 64x64px pensado para una celda de tabla) y así servir tanto de
+  imagen dominante de card como de miniatura, sin duplicar el componente.
+  Se agregaron 6 tests de componente
+  (`app/buscar/anuncio-card.test.tsx`) que cubren el precio formateado,
+  el badge de destacado (incluyendo el caso vencido, que no debe
+  mostrarse), papeles al día/pendientes y el fallback de foto.
 
 ### Corregido
 
