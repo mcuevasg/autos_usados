@@ -449,20 +449,32 @@ export default async function BuscarPage({
                * T-18, y agrupa por similitud, T-14). */}
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {grupo.anuncios.map((anuncio) => (
-                  <AnuncioCard
+                  // T-26: cada card enlaza al detalle completo del anuncio
+                  // (`/anuncio/[id]`), que muestra la galería completa de
+                  // fotos y todas sus specs — la card solo alcanza a mostrar
+                  // un subconjunto. El `<Link>` envuelve la card completa
+                  // (no solo el título) para maximizar el área clickeable;
+                  // el foco visible (`focus-visible:ring-*`) cubre la
+                  // navegación por teclado.
+                  <Link
                     key={anuncio.id}
-                    anuncio={anuncio}
-                    fotoUrl={fotoUrlPorListingId.get(anuncio.id) ?? null}
-                    tipoVendedorLabel={
-                      tiposPorSellerId.has(anuncio.seller_id)
-                        ? ETIQUETA_TIPO_VENDEDOR[
-                            tiposPorSellerId.get(
-                              anuncio.seller_id
-                            ) as SellerType
-                          ]
-                        : "Vendedor no disponible"
-                    }
-                  />
+                    href={`/anuncio/${anuncio.id}`}
+                    className="block rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  >
+                    <AnuncioCard
+                      anuncio={anuncio}
+                      fotoUrl={fotoUrlPorListingId.get(anuncio.id) ?? null}
+                      tipoVendedorLabel={
+                        tiposPorSellerId.has(anuncio.seller_id)
+                          ? ETIQUETA_TIPO_VENDEDOR[
+                              tiposPorSellerId.get(
+                                anuncio.seller_id
+                              ) as SellerType
+                            ]
+                          : "Vendedor no disponible"
+                      }
+                    />
+                  </Link>
                 ))}
               </div>
             </section>
