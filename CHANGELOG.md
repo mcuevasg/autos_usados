@@ -271,6 +271,32 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   existentes todavía no aplican visualmente estos tokens y no sufrieron
   ninguna regresión: se verificó con la suite de tests (154 pruebas) y con
   una revisión visual real en light/dark en las páginas ya existentes.
+- **T-23: Header y navegación global persistente.** Se agregó un header
+  compartido en todas las páginas del sitio
+  (`app/components/site-header.tsx` y `app/components/header-nav.tsx`,
+  renderizado desde `app/layout.tsx`), con el logo "Autos Usados Chile"
+  (enlaza a la home) y un enlace a "Buscar". Sin sesión iniciada muestra
+  "Ingresar" y "Vender / Registrarme"; con sesión iniciada muestra "Mi
+  cuenta" y "Cerrar sesión" (reutilizando la Server Action `cerrarSesion`
+  ya existente desde T-05). En mobile, la navegación colapsa a un menú
+  hamburguesa con panel desplegable, con los atributos ARIA
+  correspondientes (`aria-expanded`, `aria-label`, `aria-controls`). Usa
+  exclusivamente los tokens de diseño definidos en T-22, sin colores
+  crudos. Para resolver la sesión sin exponer el email del usuario al
+  cliente ni volver dinámicas todas las rutas del sitio, la parte
+  dependiente de sesión se aisló en un Server Component anidado con su
+  propio boundary de `<Suspense>` (patrón oficial de Next.js "push dynamic
+  access down"), que solo entrega al cliente un booleano
+  (`estaLogueado`), nunca el email ni otros datos del usuario; esto
+  mejora el streaming/TTFB, aunque no restaura por sí solo el
+  prerenderizado 100% estático de páginas como la home, login y registro
+  (ver T-28 en el backlog, para evaluar Partial Prerendering a futuro). Se
+  agregó infraestructura de testing de componentes React que el proyecto
+  no tenía (Vitest + jsdom + Testing Library), con 17 tests nuevos
+  (`app/components/site-header.test.tsx` y
+  `app/components/header-nav.test.tsx`) que cubren los estados con y sin
+  sesión, la interacción del menú mobile y el cierre de sesión real
+  verificado de punta a punta.
 
 ### Corregido
 
@@ -417,4 +443,17 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `app/globals.css`, verificados matemáticamente con la fórmula de
   luminancia relativa de WCAG: ahora 4.97:1 y 4.87–5.35:1 respectivamente,
   con el resto de la paleta ya cumpliendo AA desde su definición original.
+- **T-23: Se evitó exponer el email del usuario a un Client Component
+  innecesariamente y se recuperó el streaming del layout.** La revisión
+  detectó dos hallazgos en la primera versión del header: (1) se pasaba el
+  email del usuario (dato personal) a un Client Component solo para
+  derivar de él un booleano de "hay sesión o no", exponiéndolo al bundle
+  del cliente sin necesidad; se corrigió calculando `estaLogueado: boolean`
+  en el servidor y entregando solo ese valor al cliente. (2) Resolver la
+  sesión al tope de `app/layout.tsx` forzaba a que todas las rutas del
+  sitio quedaran dinámicas en el build, cuando antes la home, login y
+  registro se servían estáticas; se corrigió aplicando el patrón de
+  streaming con `<Suspense>` documentado por Next.js ("push dynamic access
+  down"), moviendo la parte dependiente de sesión a un Server Component
+  anidado con su propio boundary, sin duplicar la consulta a Supabase.
 </content>

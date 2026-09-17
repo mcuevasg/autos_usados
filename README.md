@@ -15,6 +15,14 @@ Este proyecto está construido con [Next.js](https://nextjs.org), bootstrapeado
 con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app),
 y usa [Supabase](https://supabase.com) como backend (Postgres, Auth, Storage).
 
+## Navegación
+
+Todas las páginas del sitio comparten un header persistente con el logo
+"Autos Usados Chile" (enlaza a la home) y un enlace a "Buscar". Sin sesión
+iniciada, muestra accesos directos a "Ingresar" y "Vender / Registrarme"; con
+sesión iniciada, muestra "Mi cuenta" y "Cerrar sesión". En pantallas
+pequeñas, la navegación colapsa a un menú hamburguesa.
+
 ## Variables de entorno
 
 El proyecto requiere credenciales de Supabase para funcionar. Copia
