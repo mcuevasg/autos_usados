@@ -145,6 +145,27 @@ como entre los grupos, un grupo con al menos un anuncio destacado se
 muestra antes que uno sin destacados. Un anuncio deja de mostrarse como
 destacado automáticamente en cuanto su plan expira.
 
+Cada tarjeta enlaza a la página de detalle completo del anuncio
+(`/anuncio/[id]`, ver siguiente sección).
+
+## Detalle de un anuncio
+
+Al hacer click en cualquier tarjeta de `/buscar`, se abre `/anuncio/[id]`
+con toda la información del anuncio: una galería con TODAS sus fotos
+(imagen principal + miniaturas clickeables debajo, o el placeholder "Sin
+foto" si no tiene ninguna), precio destacado en tipografía grande, y una
+ficha con todas sus specs (marca, modelo, año, kilometraje, estado del
+vehículo, papeles al día, tipo de uso y ubicación), además del tipo de
+vendedor (persona natural / concesionario) y el mismo badge
+"⭐ Destacado" de la búsqueda cuando corresponde. Incluye un botón
+"Contactar vendedor" (por ahora un placeholder: el proyecto todavía no
+tiene mensajería comprador/vendedor).
+
+Al igual que en `/buscar`, esta página es pública y solo muestra anuncios
+en estado "Publicado": un `id` que no existe, o que corresponde a un
+anuncio en borrador/pausado/vendido/rechazado, responde con un 404, sin
+importar si alguien adivina el UUID directamente en la URL.
+
 ## Solicitar una venta
 
 Desde el resumen de un anuncio propio en estado "Publicado", el vendedor

@@ -344,6 +344,25 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`app/buscar/anuncio-card.test.tsx`) que cubren el precio formateado,
   el badge de destacado (incluyendo el caso vencido, que no debe
   mostrarse), papeles al día/pendientes y el fallback de foto.
+- **T-26: Página de detalle de anuncio individual.** Se agregó la ruta
+  pública `app/anuncio/[id]/page.tsx`, accesible desde cada tarjeta de
+  `/buscar` (ahora envuelta en un `<Link>`), que muestra toda la
+  información de un anuncio: galería completa de fotos (`app/anuncio/[id]/galeria-fotos.tsx`,
+  imagen principal + miniaturas clickeables, reutilizando
+  `FotoMiniatura` de T-21 para el fallback "Sin foto"), todas sus specs
+  (marca, modelo, año, kilometraje, precio destacado en tipografía
+  display, estado del vehículo, papeles al día, tipo de uso, ubicación),
+  tipo de vendedor (vía `sellers_public_info`, T-14, nunca el `rut`),
+  badge "⭐ Destacado" (siempre vía `esDestacadoVigente` de T-18) y un
+  CTA "Contactar vendedor" — placeholder intencional, ya que el proyecto
+  todavía no tiene un sistema de mensajería comprador/vendedor. Mismo
+  criterio de seguridad que `/buscar` (T-13): la query filtra
+  EXPLÍCITAMENTE `status = 'publicado'`, sin confiar solo en RLS; un
+  anuncio en cualquier otro estado (o un UUID inexistente) responde
+  `notFound()` (404 real), sin distinguir el motivo. Se agregaron 3
+  tests de componente (`app/anuncio/[id]/galeria-fotos.test.tsx`) que
+  cubren el caso sin fotos, una sola foto y el cambio de imagen
+  principal al hacer click en una miniatura.
 
 ### Corregido
 
