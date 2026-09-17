@@ -236,13 +236,20 @@ micro-animaciones con propósito, mobile-first).
 ### T-23: Header/navegación global persistente
 
 - **Depende de:** T-22
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** todas las páginas del sitio comparten un
   header (vía `app/layout.tsx` o un layout compartido) con logo/nombre
   del sitio, enlace a Buscar, enlace a Vender/Ingresar, y estado de
   sesión (si hay usuario logueado, muestra su acceso a Cuenta/Cerrar
   sesión en vez de Login/Registro). Funciona en mobile (menú
   colapsable) y no rompe ninguna página existente.
+- **Nota de seguimiento:** al resolver la sesión del header se detectó
+  que, sin `cacheComponents`/PPR habilitado en Next.js, todas las
+  rutas del sitio quedan marcadas como dinámicas en el build (antes
+  Home/Login/Registro eran estáticas). Se aplicó streaming con
+  `<Suspense>` como mitigación (no bloquea logo/Buscar, reduce datos
+  enviados al cliente), pero no restaura el prerenderizado estático.
+  Ver T-28 para evaluar si vale la pena habilitar PPR más adelante.
 
 ### T-24: Landing page (Home) seductora
 
@@ -290,3 +297,28 @@ micro-animaciones con propósito, mobile-first).
   visibles y accesibles en elementos interactivos, y se verifican en al
   menos dos anchos de viewport (mobile ~375px, desktop ~1280px) sin
   overflow horizontal ni elementos rotos.
+
+### T-28: Evaluar habilitar Partial Prerendering (PPR / Cache Components)
+
+- **Depende de:** T-23
+- **Estado:** Pendiente
+- **Contexto:** T-23 detectó que resolver la sesión del usuario en el
+  header (necesario en todas las páginas) hace que Next.js marque
+  TODAS las rutas del sitio como dinámicas en el build, incluso
+  páginas sin ninguna otra dependencia de datos (Home, Login,
+  Registro), que antes eran estáticas. Se mitigó con `<Suspense>`
+  (streaming: no bloquea el contenido fijo del header ni envía datos
+  de sesión innecesarios al cliente), pero el build sigue sin poder
+  marcar esas rutas como estáticas. Next.js resuelve esto de raíz con
+  `cacheComponents`/Partial Prerendering (PPR): permite pre-generar la
+  parte estática de una ruta en build time y solo streamear la parte
+  dinámica en runtime.
+- **Criterio de aceptación:** se evalúa (spike/investigación, no
+  necesariamente implementación completa) si habilitar
+  `cacheComponents` en `next.config.ts` es viable para este proyecto
+  sin romper ninguna página existente ni introducir comportamiento
+  inesperado (requiere runtime Node, es una función que puede seguir
+  evolucionando entre versiones de Next.js). Si se decide implementar,
+  el build debe volver a marcar Home/Login/Registro como estáticas (o
+  con shell estático + partes dinámicas streameadas) sin regresiones
+  funcionales en el resto del sitio.
