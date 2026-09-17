@@ -253,6 +253,24 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   contra Supabase real (`supabase/tests/buscar-fotos-t21.test.ts`) que cubre
   la resolución de la foto de portada, el acceso anónimo y autenticado, y
   los anuncios sin fotos.
+- **T-22: Sistema de diseño base ("Autos Usados Chile").** Se definió la
+  base visual de marca del marketplace en `app/globals.css`: paleta
+  petróleo/ámbar con tokens semánticos (superficies, texto, bordes,
+  colores primario/acento/éxito/advertencia/peligro con sus variantes
+  hover, texto sobre color y fondo suave), soporte real de modo oscuro
+  (grises cálidos elevados, nunca negro puro), una escala tipográfica
+  semántica y radios y sombras reutilizables. `app/layout.tsx` ahora carga
+  las tipografías Inter (texto) y Plus Jakarta Sans (títulos) mediante
+  `next/font`, e incluye metadata orientada al marketplace chileno
+  (título, descripción y datos para compartir en redes, en español de
+  Chile). Se agregó un ícono de marca propio (`app/icon.svg`) y favicon,
+  reemplazando el boilerplate de `create-next-app`. Todos los colores de
+  la paleta cumplen el contraste mínimo AA de accesibilidad (WCAG) para
+  texto normal, tanto en modo claro como oscuro. Esta es la base
+  fundacional de un rediseño visual completo (T-22 a T-27); las páginas
+  existentes todavía no aplican visualmente estos tokens y no sufrieron
+  ninguna regresión: se verificó con la suite de tests (154 pruebas) y con
+  una revisión visual real en light/dark en las páginas ya existentes.
 
 ### Corregido
 
@@ -391,4 +409,12 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   (`supabase/migrations/0017_listing_photos_storage_public_select.sql`),
   verificado con el test de integración
   `supabase/tests/buscar-fotos-t21.test.ts`.
+- **T-22: Contraste WCAG AA insuficiente en dos tokens de color.** La
+  revisión detectó que `warning-foreground` sobre `warning` (3.98:1) y
+  `foreground-subtle` sobre `background` (3.60–4.18:1 según el modo) no
+  alcanzaban el mínimo de contraste 4.5:1 exigido por WCAG AA para texto
+  normal. Se corrigió ajustando los valores de esos tres tokens en
+  `app/globals.css`, verificados matemáticamente con la fórmula de
+  luminancia relativa de WCAG: ahora 4.97:1 y 4.87–5.35:1 respectivamente,
+  con el resto de la paleta ya cumpliendo AA desde su definición original.
 </content>
