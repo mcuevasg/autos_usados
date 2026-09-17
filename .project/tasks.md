@@ -254,7 +254,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-24: Landing page (Home) seductora
 
 - **Depende de:** T-22, T-23
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** el Home (`app/page.tsx`) reemplaza el
   bloque centrado actual por una landing page con: hero con propuesta
   de valor clara y un CTA principal (ir a Buscar), un buscador rápido
@@ -262,6 +262,19 @@ micro-animaciones con propósito, mobile-first).
   filtros, al menos una sección de categorías o marcas destacadas, y al
   menos una sección de confianza (ej. "vendedores verificados",
   cantidad de autos publicados). Responsive mobile-first.
+- **Notas de seguimiento (detectadas en revisión, no bloqueantes):**
+  (a) la afirmación "100% vendedores verificados" del hero es cierta
+  hoy porque publicar un anuncio exige `sellers.verification_status =
+  'verificado'` (0006/0010), pero no es un invariante duro: si a
+  futuro se permite revocar la verificación de un vendedor sin
+  despublicar sus anuncios existentes, la afirmación podría dejar de
+  ser exacta — revisar si conviene desactivar esta cifra o agregar esa
+  regla de despublicación si se implementa ese flujo. (b) la
+  agregación de marcas/ubicaciones para la portada (`lib/landing.ts`,
+  `obtenerResumenMarketplace`) trae `brand, location` de TODOS los
+  anuncios publicados y agrega en memoria; correcto para el volumen
+  actual, pero convendría moverlo a una vista/RPC con `group by` en
+  Postgres si el catálogo crece a miles de anuncios.
 
 ### T-25: Cards visuales en resultados de búsqueda
 
