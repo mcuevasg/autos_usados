@@ -206,3 +206,87 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
   `storage_path` no existe en el bucket, se muestra un placeholder
   visual (ej. ícono o imagen "sin foto") en vez de romper el layout o
   mostrar un ícono de imagen rota del navegador.
+
+## 8. Rediseño Visual y Experiencia de Usuario
+
+Contexto (investigación de referentes de mercado y tendencias 2026, ver
+sesión que originó estas tareas): el sitio actual usa el boilerplate
+por defecto de Next.js/Tailwind sin identidad de marca, no tiene
+navegación persistente entre páginas, el Home no comunica propuesta de
+valor, `/buscar` usa una tabla HTML plana en vez de tarjetas visuales,
+y no existe página de detalle de un anuncio individual. Referentes
+relevados: Kavak, Cars.com, CarGurus, AutoTrader (tarjetas de resultado
+con imagen dominante, badges de confianza/oportunidad, filtros con
+iconografía) y tendencias generales de diseño 2026 (hero storytelling
+con CTA único, bento grids, dark mode como sistema de tokens,
+micro-animaciones con propósito, mobile-first).
+
+### T-22: Sistema de diseño base (tokens, tipografía, metadata)
+
+- **Depende de:** —
+- **Estado:** Pendiente
+- **Criterio de aceptación:** existe una paleta de colores de marca
+  definida como tokens CSS (`app/globals.css`) con soporte real de
+  light/dark mode (no solo blanco/negro del boilerplate), una escala
+  tipográfica consistente, y el `<title>`/`<meta description>`/favicon
+  del sitio reflejan el proyecto ("Autos usados" o el nombre de marca
+  elegido) en vez del boilerplate de `create-next-app`. Los cambios se
+  aplican sin romper ninguna página existente.
+
+### T-23: Header/navegación global persistente
+
+- **Depende de:** T-22
+- **Estado:** Pendiente
+- **Criterio de aceptación:** todas las páginas del sitio comparten un
+  header (vía `app/layout.tsx` o un layout compartido) con logo/nombre
+  del sitio, enlace a Buscar, enlace a Vender/Ingresar, y estado de
+  sesión (si hay usuario logueado, muestra su acceso a Cuenta/Cerrar
+  sesión en vez de Login/Registro). Funciona en mobile (menú
+  colapsable) y no rompe ninguna página existente.
+
+### T-24: Landing page (Home) seductora
+
+- **Depende de:** T-22, T-23
+- **Estado:** Pendiente
+- **Criterio de aceptación:** el Home (`app/page.tsx`) reemplaza el
+  bloque centrado actual por una landing page con: hero con propuesta
+  de valor clara y un CTA principal (ir a Buscar), un buscador rápido
+  embebido (marca/modelo/ubicación) que redirige a `/buscar` con esos
+  filtros, al menos una sección de categorías o marcas destacadas, y al
+  menos una sección de confianza (ej. "vendedores verificados",
+  cantidad de autos publicados). Responsive mobile-first.
+
+### T-25: Cards visuales en resultados de búsqueda
+
+- **Depende de:** T-22, T-21
+- **Estado:** Pendiente
+- **Criterio de aceptación:** en `/buscar`, cada anuncio dentro de un
+  grupo comparativo se muestra como una tarjeta visual (imagen grande,
+  precio destacado, badges de destacado/condición, specs con
+  iconografía) en vez de una fila de tabla HTML. Se preserva toda la
+  funcionalidad existente: filtros, agrupación por similitud (T-14) y
+  prioridad de anuncios destacados (T-18). Responsive: al menos 1
+  columna en mobile, grid de varias columnas en desktop.
+
+### T-26: Página de detalle de anuncio individual
+
+- **Depende de:** T-25
+- **Estado:** Pendiente
+- **Criterio de aceptación:** existe una ruta de detalle
+  (`/anuncio/[id]` o similar) accesible desde cada tarjeta de
+  `/buscar`, que muestra galería de todas las fotos del anuncio, todas
+  sus specs (marca, modelo, año, kilometraje, precio, estado, papeles
+  al día, tipo de uso, ubicación), tipo de vendedor, y un CTA de
+  contacto. Solo accesible para anuncios en estado "publicado" (mismo
+  criterio de visibilidad pública que T-12/T-13).
+
+### T-27: Pulido de micro-interacciones y responsive
+
+- **Depende de:** T-24, T-25, T-26
+- **Estado:** Pendiente
+- **Criterio de aceptación:** las páginas principales (Home, Buscar,
+  Detalle de anuncio) tienen estados de carga (skeletons o equivalente)
+  mientras se resuelven datos del servidor, estados de hover/focus
+  visibles y accesibles en elementos interactivos, y se verifican en al
+  menos dos anchos de viewport (mobile ~375px, desktop ~1280px) sin
+  overflow horizontal ni elementos rotos.
