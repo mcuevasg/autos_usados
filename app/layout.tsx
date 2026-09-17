@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { SiteHeader } from "./components/site-header";
 import "./globals.css";
 
 /**
@@ -58,7 +59,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es-CL"
       className={`${inter.variable} ${plusJakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Header/navegación global (T-23): se renderiza una sola vez acá
+         * para que todas las páginas lo compartan sin repetirlo. */}
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }
