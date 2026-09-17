@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { esDestacadoVigente } from "@/lib/listings";
+import { FotoMiniatura } from "./foto-miniatura";
 
 const formateadorPrecio = new Intl.NumberFormat("es-CL", {
   style: "currency",
   currency: "CLP",
   maximumFractionDigits: 0,
 });
+
+// T-21: vigencia corta de la URL firmada de la foto de portada, igual
+// criterio que `app/vendedor/anuncios/[id]/fotos/page.tsx` y
+// `app/moderador/vendedores/page.tsx`: solo se usa para pintar la
+// miniatura en esta respuesta, no se persiste en ningún lado.
+const VIGENCIA_URL_FIRMADA_SEGUNDOS = 60 * 5;
 
 type Anuncio = {
   id: string;
@@ -231,6 +238,97 @@ export default async function BuscarPage({
     }
   }
 
+  // T-21: URL de la primera foto (por `position` ascendente) de cada
+  // anuncio, para la columna "Foto" de la tabla comparativa.
+  //
+  // El bucket `listing-photos` es PRIVADO (`public = false`, ver
+  // 0009_listing_photos_storage_and_minimum.sql), así que `getPublicUrl`
+  // no sirve aquí: devolvería una URL que el navegador no puede leer.
+  // Hace falta una URL firmada (`createSignedUrl(s)`), mismo mecanismo ya
+  // usado en `app/vendedor/anuncios/[id]/fotos/page.tsx` y
+  // `app/moderador/vendedores/page.tsx`. Se usa el cliente normal
+  // (`supabase`, con la cookie de sesión si existe), NUNCA el cliente
+  // admin/service role: firmar URLs de Storage con la service role desde
+  // una ruta pública sin sesión ampliaría innecesariamente el radio de
+  // acceso privilegiado, así que se prefiere respetar el mismo cliente
+  // (y por lo tanto las mismas policies de RLS) que ya usa el resto de
+  // esta página.
+  //
+  // NOTA para quien revise este cambio: las policies de
+  // `storage.objects` para este bucket
+  // (`listing_photos_storage_select`, 0009) solo aplican `to
+  // authenticated`, no `to anon`. Un visitante SIN sesión en esta
+  // página pública verá el placeholder "Sin foto" para todos los
+  // anuncios (verificado contra la base real: Supabase responde "Either
+  // the object does not exist or you do not have access to it" para un
+  // `storage_path` de un anuncio publicado al pedir la URL firmada como
+  // `anon`); un usuario CON sesión sí verá las fotos, porque para él la
+  // condición `l.status = 'publicado'` de esa policy sí se cumple. Esto
+  // cumple el criterio de aceptación (nunca rompe el layout ni muestra
+  // un ícono roto, siempre cae al placeholder), pero para que también
+  // se vean las fotos sin sesión hace falta una migración de RLS sobre
+  // la base compartida (agregar `to anon` a esa policy, mismo criterio
+  // que ya tiene `listing_photos_select` a nivel de tabla en
+  // 0002_rls_policies.sql) que no se aplicó en este cambio por no tener
+  // permiso para modificar la base de datos compartida/productiva.
+  //
+  // Una sola consulta a `listing_photos` con `.in("listing_id", ...)`
+  // (en vez de una consulta por anuncio) trae las fotos de TODOS los
+  // anuncios listados; nos quedamos en memoria con la de menor
+  // `position` por anuncio (su "portada").
+  const listingIds = listingsOrdenados.map((listing) => listing.id);
+
+  const storagePathPortadaPorListingId = new Map<string, string>();
+  if (listingIds.length > 0) {
+    const { data: fotos } = await supabase
+      .from("listing_photos")
+      .select("listing_id, storage_path, position")
+      .in("listing_id", listingIds)
+      .order("position", { ascending: true });
+
+    for (const foto of fotos ?? []) {
+      const listingId = foto.listing_id as string;
+      // Como la consulta viene ordenada por `position` ascendente, la
+      // primera fila que se ve para cada `listing_id` es su portada;
+      // las siguientes (posiciones mayores) se descartan.
+      if (!storagePathPortadaPorListingId.has(listingId)) {
+        storagePathPortadaPorListingId.set(
+          listingId,
+          foto.storage_path as string
+        );
+      }
+    }
+  }
+
+  const fotoUrlPorListingId = new Map<string, string>();
+  if (storagePathPortadaPorListingId.size > 0) {
+    const storagePaths = Array.from(storagePathPortadaPorListingId.values());
+    const { data: firmadas } = await supabase.storage
+      .from("listing-photos")
+      .createSignedUrls(storagePaths, VIGENCIA_URL_FIRMADA_SEGUNDOS);
+
+    // `createSignedUrls` responde un array paralelo a `storagePaths`,
+    // pero cada elemento trae su propio `path`/`error` en vez de
+    // lanzar una excepción global: si el archivo referenciado en
+    // `storage_path` ya no existe en el bucket, ese elemento viene con
+    // `signedUrl: null` y `error` seteado, sin afectar al resto. Se
+    // arma un mapa por `path` (no por índice) para no asumir que el
+    // orden de la respuesta coincide 1:1 con `storagePaths`.
+    const signedUrlPorStoragePath = new Map<string, string>();
+    for (const item of firmadas ?? []) {
+      if (item.path && item.signedUrl) {
+        signedUrlPorStoragePath.set(item.path, item.signedUrl);
+      }
+    }
+
+    for (const [listingId, storagePath] of storagePathPortadaPorListingId) {
+      const signedUrl = signedUrlPorStoragePath.get(storagePath);
+      if (signedUrl) {
+        fotoUrlPorListingId.set(listingId, signedUrl);
+      }
+    }
+  }
+
   const grupos = agruparPorSimilitud(listingsOrdenados);
 
   // T-18 (REQ-09): prioridad también ENTRE grupos comparativos, además
@@ -356,6 +454,7 @@ export default async function BuscarPage({
                 <table className="w-full min-w-[640px] border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-black/[.15] text-left dark:border-white/[.2]">
+                      <th className="py-2 pr-4">Foto</th>
                       <th className="py-2 pr-4">Destacado</th>
                       <th className="py-2 pr-4">Año</th>
                       <th className="py-2 pr-4">Precio</th>
@@ -372,6 +471,11 @@ export default async function BuscarPage({
                         key={anuncio.id}
                         className="border-b border-black/[.08] last:border-none dark:border-white/[.1]"
                       >
+                        <td className="py-2 pr-4">
+                          <FotoMiniatura
+                            url={fotoUrlPorListingId.get(anuncio.id) ?? null}
+                          />
+                        </td>
                         <td className="py-2 pr-4">
                           {esDestacadoVigente(anuncio) && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-900/30 dark:text-amber-300">

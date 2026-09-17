@@ -191,3 +191,18 @@ dependencias. Estado inicial de todas las tareas: **Pendiente**.
 - **Criterio de aceptación:** los mismos eventos de T-19 (cambio de
   estado de anuncio, aprobación de venta) disparan un correo al usuario
   afectado vía un proveedor de email con tier gratuito (ej. Resend).
+
+## 7. Mejoras de Búsqueda
+
+### T-21: Mostrar fotos de los anuncios en la búsqueda
+
+- **Depende de:** T-10, T-13
+- **Estado:** Completed
+- **Criterio de aceptación:** en `/buscar` (`app/buscar/page.tsx`), cada
+  fila de anuncio en la tabla comparativa muestra una miniatura con la
+  primera foto del anuncio (`listing_photos` ordenada por `position`,
+  resuelta a URL pública del bucket `listing-photos` de Supabase
+  Storage). Si el anuncio no tiene fotos, o el archivo referenciado en
+  `storage_path` no existe en el bucket, se muestra un placeholder
+  visual (ej. ícono o imagen "sin foto") en vez de romper el layout o
+  mostrar un ícono de imagen rota del navegador.
