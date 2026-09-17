@@ -23,6 +23,20 @@ iniciada, muestra accesos directos a "Ingresar" y "Vender / Registrarme"; con
 sesión iniciada, muestra "Mi cuenta" y "Cerrar sesión". En pantallas
 pequeñas, la navegación colapsa a un menú hamburguesa.
 
+## Página de inicio
+
+La home (`/`) es una landing page pensada para captar y orientar a nuevos
+visitantes: un hero con el mensaje "Tu próximo auto usado, sin sorpresas" y
+un badge de confianza, un buscador rápido (marca, modelo y ubicación) que
+lleva directo a `/buscar` con esos filtros ya aplicados, una franja con
+cifras reales del marketplace (autos publicados, porcentaje de vendedores
+verificados y ciudades con anuncios), una grilla de marcas destacadas
+—calculada a partir de los anuncios realmente publicados, cada una
+enlazando a la búsqueda filtrada por esa marca—, una sección con los tres
+pilares de confianza de la plataforma (verificación de RUT, mínimo de fotos
+por anuncio y agrupación comparativa de ofertas similares) y un llamado a
+la acción final para quienes quieran vender.
+
 ## Variables de entorno
 
 El proyecto requiere credenciales de Supabase para funcionar. Copia
@@ -113,8 +127,7 @@ Cualquier visitante, sin necesidad de iniciar sesión, puede buscar autos
 publicados en `/buscar`, con filtros combinables por marca, modelo, año y
 ubicación. Los resultados solo muestran anuncios en estado "Publicado"; si
 ningún anuncio coincide con los filtros aplicados, se muestra un mensaje
-indicando que no hay resultados. La página de inicio enlaza directamente a
-`/buscar` y a `/login`.
+indicando que no hay resultados.
 
 Los resultados se agrupan automáticamente por marca, modelo y rango de año
 similar, mostrando por cada grupo un listado comparativo con una miniatura

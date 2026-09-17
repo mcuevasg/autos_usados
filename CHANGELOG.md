@@ -297,6 +297,29 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   `app/components/header-nav.test.tsx`) que cubren los estados con y sin
   sesión, la interacción del menú mobile y el cierre de sesión real
   verificado de punta a punta.
+- **T-24: Landing page seductora en la página de inicio.** Se rediseñó por
+  completo la home (`app/page.tsx`): un hero con headline corto ("Tu
+  próximo auto usado, sin sorpresas") y un badge de confianza, un buscador
+  rápido embebido (formulario `GET` que redirige a `/buscar` con los
+  filtros de marca, modelo y ubicación ya aplicados), una franja de cifras
+  reales del marketplace (autos publicados, % de vendedores verificados,
+  ciudades con anuncios), una grilla de marcas destacadas (agregadas desde
+  los anuncios realmente publicados, cada una enlazando a
+  `/buscar?brand=...`, con una lista de marcas comunes como respaldo
+  cuando aún no hay datos), una sección de tres pilares de confianza
+  (verificación de RUT, mínimo de fotos por anuncio, agrupación
+  comparativa) y un llamado a la acción final para vendedores. Se agregó
+  `lib/landing.ts`, que separa la consulta a Supabase
+  (`obtenerResumenMarketplace`) de una función pura de agregación
+  (`resumirAnunciosPublicados`), con un resultado de respaldo seguro si la
+  consulta falla. Siguiendo el mismo patrón de streaming introducido en
+  T-23, los dos bloques que dependen de datos (cifras y marcas) se
+  aislaron en `app/components/landing-datos.tsx` dentro de un único
+  `<Suspense>` que comparte una sola consulta a Supabase, sin bloquear el
+  resto del hero. Se incluyeron 22 tests nuevos (`lib/landing.test.ts` y
+  `app/components/landing-datos.test.tsx`) que cubren la agregación, los
+  casos de respaldo, el singular/plural en los textos y el encoding de las
+  URLs de búsqueda por marca.
 
 ### Corregido
 
