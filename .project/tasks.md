@@ -279,7 +279,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-25: Cards visuales en resultados de búsqueda
 
 - **Depende de:** T-22, T-21
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** en `/buscar`, cada anuncio dentro de un
   grupo comparativo se muestra como una tarjeta visual (imagen grande,
   precio destacado, badges de destacado/condición, specs con
