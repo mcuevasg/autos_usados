@@ -224,7 +224,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-22: Sistema de diseño base (tokens, tipografía, metadata)
 
 - **Depende de:** —
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** existe una paleta de colores de marca
   definida como tokens CSS (`app/globals.css`) con soporte real de
   light/dark mode (no solo blanco/negro del boilerplate), una escala
