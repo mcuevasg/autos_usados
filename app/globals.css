@@ -271,6 +271,27 @@
   --shadow-overlay: var(--elevation-overlay);
 }
 
+/* ============================================================================
+ * Micro-interacciones (T-27)
+ * ----------------------------------------------------------------------------
+ * Animación de entrada del panel mobile del header (`app/components/
+ * header-nav.tsx`): reemplaza el cambio abrupto de "no existe" a "visible"
+ * por un fundido + deslizamiento corto. Vive acá (y no como utilidad inline)
+ * porque Tailwind v4 no trae una utilidad `animate-*` para esto y definir el
+ * `@keyframes` es la única forma nativa de lograrlo sin agregar una
+ * dependencia de animaciones.
+ * ========================================================================== */
+@keyframes menu-mobile-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer base {
   body {
     background: var(--background);

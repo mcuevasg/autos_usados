@@ -357,6 +357,11 @@ export default async function BuscarPage({
         method="get"
         className="flex w-full max-w-5xl flex-col gap-4 rounded-card border border-border bg-surface p-4 shadow-card"
       >
+        {/* T-27: hover/focus visibles en los 4 inputs, alineados con el
+         * mismo patrón que `CampoBuscador` del buscador rápido del Home
+         * (`app/page.tsx`) -antes estos inputs solo tenían el borde fijo de
+         * reposo, sin ningún feedback visual al pasar el mouse o enfocar
+         * con teclado más allá del anillo de foco global. */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
           <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
             Marca
@@ -365,7 +370,7 @@ export default async function BuscarPage({
               name="brand"
               defaultValue={brand}
               placeholder="Ej: Toyota"
-              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
             />
           </label>
           <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
@@ -375,7 +380,7 @@ export default async function BuscarPage({
               name="model"
               defaultValue={model}
               placeholder="Ej: Yaris"
-              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
             />
           </label>
           <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
@@ -385,7 +390,7 @@ export default async function BuscarPage({
               name="year"
               defaultValue={year}
               placeholder="Ej: 2020"
-              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
             />
           </label>
           <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
@@ -395,7 +400,7 @@ export default async function BuscarPage({
               name="location"
               defaultValue={location}
               placeholder="Ej: Santiago"
-              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
             />
           </label>
         </div>

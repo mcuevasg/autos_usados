@@ -76,7 +76,7 @@ export function HeaderNav({ estaLogueado }: HeaderNavProps) {
         aria-expanded={menuAbierto}
         aria-controls="menu-mobile"
         aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-strong text-foreground md:hidden"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-strong text-foreground transition-colors duration-200 hover:border-primary hover:bg-surface-muted md:hidden"
       >
         {menuAbierto ? <IconoCerrar /> : <IconoMenu />}
       </button>
@@ -85,7 +85,15 @@ export function HeaderNav({ estaLogueado }: HeaderNavProps) {
         <nav
           id="menu-mobile"
           aria-label="Principal (mobile)"
-          className="absolute inset-x-0 top-full z-20 flex flex-col gap-1 border-t border-border bg-surface px-4 py-3 md:hidden"
+          // T-27: pequeña animación de entrada (fade + slide) en vez de un
+          // cambio abrupto; se define en `app/globals.css`
+          // (`@keyframes menu-mobile-in`). Solo cubre la apertura -el panel
+          // se desmonta directo al cerrar-, evitando la complejidad de
+          // animar salida de un elemento condicional sin agregar estado ni
+          // dependencias nuevas. `motion-safe:` (variante nativa de
+          // Tailwind) evita la animación para quien configuró "reducir
+          // movimiento" en su sistema operativo.
+          className="absolute inset-x-0 top-full z-20 flex origin-top flex-col gap-1 border-t border-border bg-surface px-4 py-3 motion-safe:[animation:menu-mobile-in_0.2s_ease-out] md:hidden"
         >
           <Link
             href="/buscar"
