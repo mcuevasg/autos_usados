@@ -303,7 +303,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-27: Pulido de micro-interacciones y responsive
 
 - **Depende de:** T-24, T-25, T-26
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Criterio de aceptación:** las páginas principales (Home, Buscar,
   Detalle de anuncio) tienen estados de carga (skeletons o equivalente)
   mientras se resuelven datos del servidor, estados de hover/focus

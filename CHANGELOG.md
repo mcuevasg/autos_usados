@@ -363,6 +363,73 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   tests de componente (`app/anuncio/[id]/galeria-fotos.test.tsx`) que
   cubren el caso sin fotos, una sola foto y el cambio de imagen
   principal al hacer click en una miniatura.
+- **T-27: Pulido de micro-interacciones y responsive (cierre del
+  rediseño visual T-22 a T-27).** Tarea de auditoría, no de construcción
+  desde cero: se revisaron las 3 páginas principales (Home, `/buscar`,
+  `/anuncio/[id]`) contra el criterio de aceptación (estados de carga,
+  hover/focus visibles, responsive en ~375px y ~1280px) y se completaron
+  los huecos encontrados.
+  - **Estados de carga entre navegaciones:** `/buscar` y `/anuncio/[id]`
+    son Server Components enteramente `async` (resuelven filtros, la
+    consulta a `listings`/`sellers_public_info` y las URLs firmadas de
+    fotos antes del primer `return`), a diferencia del Home (T-24), que
+    ya empuja sus dependencias de datos a `<Suspense>` internos. Sin un
+    `loading.tsx`, la navegación hacia esas dos rutas no mostraba nada
+    hasta que la respuesta completa estuviera lista. Se agregaron
+    `app/buscar/loading.tsx` y `app/anuncio/[id]/loading.tsx`
+    (convención `loading.js` del App Router, ver
+    `node_modules/next/dist/docs/01-app/03-api-reference/
+    03-file-conventions/loading.md`), cada uno reproduciendo la silueta
+    real de su página (encabezado, formulario de filtros y grid de
+    cards; galería y ficha de specs) con el mismo lenguaje visual
+    (`animate-pulse` + `bg-surface-muted`) que los skeletons ya
+    existentes de T-23/T-24, con tests de componente
+    (`app/buscar/loading.test.tsx`,
+    `app/anuncio/[id]/loading.test.tsx`).
+  - **Inputs del formulario de filtros de `/buscar` sin feedback de
+    hover/focus:** a diferencia del buscador rápido del Home
+    (`CampoBuscador` en `app/page.tsx`, T-24), los 4 inputs de
+    `app/buscar/page.tsx` solo tenían el borde fijo de reposo. Se
+    alinearon al mismo patrón (`hover:border-primary`,
+    `focus:border-primary`, `placeholder:text-foreground-subtle`,
+    `transition-colors`) para que ambos formularios de búsqueda del
+    sitio se sientan consistentes. Los botones "Buscar"/"Limpiar
+    filtros" y el resto de esta página ya usaban los tokens de marca de
+    T-22 (`bg-primary`/`border-border-strong` con hover), sin rastros
+    del patrón antiguo `bg-foreground`/`text-background`.
+  - **Menú mobile del header sin transición ni hover en la
+    hamburguesa:** el botón hamburguesa de `app/components/
+    header-nav.tsx` (T-23) no tenía ningún estado de hover, y el panel
+    colapsable aparecía/desaparecía de forma abrupta al montarse y
+    desmontarse condicionalmente. Se agregó `hover:border-primary
+    hover:bg-surface-muted` al botón, y una animación de entrada corta
+    (fundido + deslizamiento de 0.2s, `@keyframes menu-mobile-in` en
+    `app/globals.css`) al panel, aplicada solo bajo `motion-safe:`
+    (variante nativa de Tailwind) para respetar la preferencia de
+    "reducir movimiento" del sistema operativo. Sin dependencias
+    nuevas: solo utilidades nativas de Tailwind y un `@keyframes` CSS
+    plano.
+  - **Verificación responsive real:** se auditaron las 3 páginas en
+    375px y 1280px, en light y dark, contra un servidor local vía
+    Chrome headless (CDP) — sin overflow horizontal
+    (`scrollWidth === clientWidth` en los 8 escenarios revisados), sin
+    texto cortado ni elementos solapados. No se encontraron regresiones
+    de layout que corregir más allá de las descritas arriba: el trabajo
+    de T-22 a T-26 ya dejaba las tres páginas responsive.
+  - No se tocó ninguna lógica de datos ni se agregaron dependencias
+    nuevas. `npm run build`, `npx tsc --noEmit` y los 46 tests de
+    componente bajo `app/` (`npx vitest run app`) pasan sin errores
+    nuevos (el lint preexistente en `app/auth/callback/route.test.ts` y
+    los tests de integración contra el proyecto Supabase real bajo
+    `supabase/tests/` no están afectados por este cambio; sus fallas
+    observadas durante la verificación son *rate limiting* de Auth,
+    reproducibles también en el `main` previo a esta tarea).
+
+  Con T-27 se cierra el rediseño visual completo iniciado en T-22:
+  sistema de diseño con tokens y modo oscuro real (T-22), navegación
+  global persistente (T-23), landing seductora (T-24), cards visuales
+  de búsqueda (T-25), página de detalle de anuncio (T-26) y este pulido
+  final de micro-interacciones y responsive (T-27).
 
 ### Corregido
 

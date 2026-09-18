@@ -21,7 +21,8 @@ Todas las páginas del sitio comparten un header persistente con el logo
 "Autos Usados Chile" (enlaza a la home) y un enlace a "Buscar". Sin sesión
 iniciada, muestra accesos directos a "Ingresar" y "Vender / Registrarme"; con
 sesión iniciada, muestra "Mi cuenta" y "Cerrar sesión". En pantallas
-pequeñas, la navegación colapsa a un menú hamburguesa.
+pequeñas, la navegación colapsa a un menú hamburguesa, con una breve
+animación de entrada al abrirse.
 
 ## Página de inicio
 
@@ -148,6 +149,11 @@ destacado automáticamente en cuanto su plan expira.
 Cada tarjeta enlaza a la página de detalle completo del anuncio
 (`/anuncio/[id]`, ver siguiente sección).
 
+Al navegar hacia `/buscar` (o al recargarla con filtros nuevos) se muestra de
+inmediato un estado de carga tipo skeleton con la misma silueta de la
+página real (formulario de filtros y grid de tarjetas), mientras se
+resuelven los datos en el servidor.
+
 ## Detalle de un anuncio
 
 Al hacer click en cualquier tarjeta de `/buscar`, se abre `/anuncio/[id]`
@@ -165,6 +171,10 @@ Al igual que en `/buscar`, esta página es pública y solo muestra anuncios
 en estado "Publicado": un `id` que no existe, o que corresponde a un
 anuncio en borrador/pausado/vendido/rechazado, responde con un 404, sin
 importar si alguien adivina el UUID directamente en la URL.
+
+Al navegar hacia `/anuncio/[id]` se muestra igual que en `/buscar` un
+estado de carga tipo skeleton (galería + ficha de specs) mientras se
+resuelven los datos del anuncio en el servidor.
 
 ## Solicitar una venta
 
