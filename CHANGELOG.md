@@ -474,6 +474,49 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   esta tarea: *rate limiting* de red contra Supabase Auth real en tests
   de integración, y 4 errores de lint preexistentes en
   `app/auth/callback/route.test.ts`, archivo no tocado por este cambio).
+- **T-29: Asistente de Compra con IA.** Se agregó un chat asistente en la
+  página pública `/asistente` (`app/asistente/page.tsx` y
+  `app/asistente/chat.tsx`, sin necesidad de sesión, mismo criterio que
+  `/buscar`) que ayuda a compradores a definir en lenguaje natural qué
+  auto buscan o qué requerimientos de compra tienen, conectado a un
+  modelo LLM de NVIDIA (`nvidia/nemotron-3.5-lightning-30b-a3b`, vía la
+  API compatible con OpenAI de NVIDIA NIM). El chat cliente nunca habla
+  directo con NVIDIA: llama a `POST /api/asistente/chat`
+  (`app/api/asistente/chat/route.ts`), único punto que se comunica con
+  NVIDIA a través de `lib/nvidia-chat.ts` (con `import "server-only"`,
+  mismo patrón que `lib/supabase/server.ts`/`lib/email.ts`), de modo que
+  la API key nunca llega al bundle del cliente. La ruta valida el body
+  (máximo 20 mensajes, 2000 caracteres por mensaje) y responde siempre
+  con JSON, incluso ante error. Para evitar que el modelo invente autos
+  que no existen, `lib/asistente-contexto.ts` arma el contexto real desde
+  los `listings` en estado "publicado" (mismo filtro de visibilidad
+  pública que T-12/T-13) antes de cada llamada al LLM, acotando la
+  búsqueda por palabras clave del último mensaje del usuario y
+  cayendo a una muestra de anuncios recientes si no hay match; el mensaje
+  de sistema instruye al modelo a recomendar solo autos de esa lista real
+  y a decir cuando no hay coincidencias, en vez de inventar. Las
+  credenciales se configuran en `.env.local` (`NVIDIA_API_KEY`,
+  `NVIDIA_API_ENDPOINT`, `NVIDIA_MODEL_ID`), documentadas en
+  `.env.local.example`. Se incluyeron 40 tests nuevos
+  (`lib/nvidia-chat.test.ts`, `lib/asistente-contexto.test.ts`,
+  `app/api/asistente/chat/route.test.ts` y `app/asistente/chat.test.tsx`)
+  que cubren el manejo de error cuando NVIDIA falla (red, status no-2xx,
+  respuesta inesperada); `npm run build` y `npm run lint` sin errores
+  nuevos. **Deuda técnica pendiente:** al cerrar esta tarea, la llamada
+  real a NVIDIA con las credenciales configuradas responde
+  `403 Authorization failed` en el endpoint de inferencia
+  (`/chat/completions`), aunque la misma API key sí puede listar modelos
+  (`GET /models` responde 200 e incluye el modelo configurado); es un
+  problema de permisos/créditos de la cuenta NVIDIA en build.nvidia.com,
+  no del código — el manejo de error del lado del sitio ya está cubierto
+  (el chat muestra un mensaje de error claro sin romper la página), pero
+  la integración no pudo verificarse end-to-end con una respuesta real
+  exitosa del modelo hasta que se resuelva el acceso de inferencia en la
+  cuenta NVIDIA. Limitaciones menores adicionales: la extracción de
+  palabras clave del mensaje del usuario es heurística simple (no NLU
+  real), el historial de conversación no se persiste, y no se agregó un
+  link "Asistente" en el header global de navegación (queda como mejora
+  futura de descubribilidad).
 
 ### Corregido
 
@@ -633,4 +676,3 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   streaming con `<Suspense>` documentado por Next.js ("push dynamic access
   down"), moviendo la parte dependiente de sesión a un Server Component
   anidado con su propio boundary, sin duplicar la consulta a Supabase.
-</content>

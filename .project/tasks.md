@@ -335,3 +335,39 @@ micro-animaciones con propósito, mobile-first).
   el build debe volver a marcar Home/Login/Registro como estáticas (o
   con shell estático + partes dinámicas streameadas) sin regresiones
   funcionales en el resto del sitio.
+
+## 9. Asistente de Compra con IA (Chat LLM)
+
+### T-29: Chat asistente con LLM (NVIDIA) para definir requerimientos de compra
+
+- **Depende de:** T-13
+- **Estado:** Completed
+- **Contexto:** las credenciales del modelo LLM de NVIDIA
+  (`NVIDIA_API_KEY`, `NVIDIA_API_ENDPOINT`, `NVIDIA_MODEL_ID`) ya están
+  configuradas en `.env.local`. El endpoint es compatible con la API de
+  chat completions de NVIDIA NIM (`https://integrate.api.nvidia.com/v1`,
+  estilo OpenAI: `POST {endpoint}/chat/completions` con
+  `Authorization: Bearer {NVIDIA_API_KEY}`).
+- **Criterio de aceptación:** existe una interfaz de chat accesible sin
+  necesidad de iniciar sesión (mismo criterio de visibilidad pública que
+  `/buscar`, T-13) donde un comprador puede escribir en lenguaje natural
+  qué auto busca o qué requerimientos de compra tiene (ej. "busco un SUV
+  familiar en Santiago, bajo 8 millones"). La llamada al LLM de NVIDIA se
+  hace exclusivamente server-side (Route Handler o Server Action), sin
+  exponer `NVIDIA_API_KEY` al navegador. El asistente consulta los
+  anuncios en estado "Publicado" existentes en la base de datos (mismo
+  criterio de visibilidad que T-12/T-13) para fundamentar sus respuestas
+  y no debe inventar autos que no existen en el catálogo. Cuando el
+  usuario entrega suficiente información (marca/modelo/año/ubicación/
+  presupuesto), el asistente sugiere anuncios concretos existentes y/o
+  un enlace a `/buscar` con esos filtros aplicados. Si falla la llamada
+  al proveedor NVIDIA (red, credenciales inválidas, timeout), el chat
+  muestra un mensaje de error claro sin romper el resto de la página.
+- **Nota de seguimiento:** al cerrar la tarea, la cuenta de NVIDIA
+  configurada responde `403 Authorization failed` en
+  `/chat/completions` (la misma API key sí puede listar modelos vía
+  `GET /models`), lo que impidió verificar una respuesta real exitosa
+  del modelo end-to-end. Es un problema de permisos/créditos de la
+  cuenta en build.nvidia.com, no del código: el manejo de error ya está
+  cubierto y probado. Pendiente habilitar el acceso de inferencia en el
+  dashboard de NVIDIA para completar la verificación end-to-end.

@@ -56,6 +56,9 @@ Variables requeridas:
   las notificaciones por email. Mientras la cuenta Resend no tenga un
   dominio propio verificado, los correos de prueba solo se entregan a la
   casilla del dueño de la cuenta (limitación del proveedor en modo sandbox).
+- `NVIDIA_API_KEY`, `NVIDIA_API_ENDPOINT` y `NVIDIA_MODEL_ID`: credenciales
+  del modelo LLM de [NVIDIA NIM](https://build.nvidia.com) usado por el
+  Asistente de Compra con IA (`/asistente`).
 
 `.env.local` no se versiona.
 
@@ -220,6 +223,21 @@ La verificación de vendedor solo genera notificación dentro de la app, sin
 email. Un email que falle en enviarse nunca bloquea ni revierte la acción
 del moderador.
 
+## Asistente de Compra con IA
+
+Cualquier visitante, sin necesidad de iniciar sesión, puede conversar con un
+asistente de compra en `/asistente` para ir definiendo en lenguaje natural
+qué auto busca o qué requerimientos de compra tiene. El asistente responde
+recomendando únicamente autos que realmente están publicados en el
+marketplace (nunca inventa anuncios que no existen), y avisa cuando no
+encuentra coincidencias.
+
+> **Nota:** al cierre de esta funcionalidad, la cuenta de NVIDIA configurada
+> responde `403 Authorization failed` al llamar al modelo (problema de
+> permisos/créditos de la cuenta, no del código); mientras eso no se
+> resuelva, el asistente muestra un mensaje de error claro en vez de una
+> respuesta del modelo.
+
 ## Tests
 
 Este proyecto usa [Vitest](https://vitest.dev) para las pruebas unitarias.
@@ -243,4 +261,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-</content>
