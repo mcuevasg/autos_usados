@@ -29,6 +29,18 @@ type FiltrosBusqueda = {
   model?: string;
   year?: string;
   location?: string;
+  /**
+   * Rango de precio (pesos chilenos, sin puntos ni símbolo) en la URL.
+   * Se agregó junto con el Asistente de Compra con IA (T-29): cuando el
+   * comprador menciona un presupuesto en el chat, el asistente arma un
+   * link a `/buscar?priceMin=...&priceMax=...` con estos mismos nombres de
+   * parámetro (`lib/asistente-contexto.ts` → `extraerRangoPrecio`,
+   * `app/asistente/chat.tsx` → `urlBuscarConFiltros`). También quedan
+   * disponibles como inputs normales del formulario para quien prefiera
+   * escribirlos directo acá.
+   */
+  priceMin?: string;
+  priceMax?: string;
 };
 
 type SellerType = "persona_natural" | "concesionario";
@@ -154,6 +166,8 @@ export default async function BuscarPage({
   const model = filtros.model?.trim() ?? "";
   const year = filtros.year?.trim() ?? "";
   const location = filtros.location?.trim() ?? "";
+  const priceMin = filtros.priceMin?.trim() ?? "";
+  const priceMax = filtros.priceMax?.trim() ?? "";
 
   const supabase = await createSupabaseServerClient();
 
@@ -177,6 +191,18 @@ export default async function BuscarPage({
     const yearNumero = Number(year);
     if (Number.isInteger(yearNumero)) {
       query = query.eq("year", yearNumero);
+    }
+  }
+  if (priceMin) {
+    const priceMinNumero = Number(priceMin);
+    if (Number.isFinite(priceMinNumero) && priceMinNumero >= 0) {
+      query = query.gte("price", priceMinNumero);
+    }
+  }
+  if (priceMax) {
+    const priceMaxNumero = Number(priceMax);
+    if (Number.isFinite(priceMaxNumero) && priceMaxNumero >= 0) {
+      query = query.lte("price", priceMaxNumero);
     }
   }
 
@@ -351,9 +377,9 @@ export default async function BuscarPage({
           Buscar autos
         </h1>
         <p className="text-body text-foreground-muted">
-          Filtra entre los anuncios publicados por marca, modelo, año y
-          ubicación. Los resultados se agrupan automáticamente por marca,
-          modelo y rango de año similar.
+          Filtra entre los anuncios publicados por marca, modelo, año,
+          ubicación y precio. Los resultados se agrupan automáticamente por
+          marca, modelo y rango de año similar.
         </p>
       </div>
 
@@ -404,6 +430,33 @@ export default async function BuscarPage({
               name="location"
               defaultValue={location}
               placeholder="Ej: Santiago"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
+            />
+          </label>
+          {/* T-29: `priceMin`/`priceMax` en la URL, mismos nombres que arma
+           * el Asistente de Compra con IA al enlazar acá desde el chat
+           * (ver `app/asistente/chat.tsx` → `urlBuscarConFiltros`). */}
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
+            Precio mínimo
+            <input
+              type="number"
+              name="priceMin"
+              defaultValue={priceMin}
+              min={0}
+              step={100_000}
+              placeholder="Ej: 5000000"
+              className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-body-sm text-foreground-muted">
+            Precio máximo
+            <input
+              type="number"
+              name="priceMax"
+              defaultValue={priceMax}
+              min={0}
+              step={100_000}
+              placeholder="Ej: 10000000"
               className="rounded-control border border-border-strong bg-surface px-3 py-2 text-foreground transition-colors placeholder:text-foreground-subtle hover:border-primary focus:border-primary"
             />
           </label>

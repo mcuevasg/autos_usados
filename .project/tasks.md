@@ -381,3 +381,16 @@ micro-animaciones con propósito, mobile-first).
   cuando no alcanza para decidir), y no inventa autos. Probado por
   `POST /api/asistente/chat` directo y con la interfaz completa en el
   navegador.
+- **Ajustes posteriores (mismo alcance de T-29, pedidos tras la primera
+  entrega):** (1) el acceso al chat se movió del link "Asistente" del
+  header a un widget flotante (`app/components/chat-flotante.tsx`,
+  botón circular inferior derecho, montado en `app/layout.tsx`) visible
+  en cualquier página del sitio, reutilizando el mismo `ChatAsistente`.
+  (2) Los filtros que el asistente detecta en el mensaje del comprador
+  -antes solo precio- ahora también incluyen marca, modelo y ubicación
+  (`inferirFiltrosCatalogo`, lib/asistente-contexto.ts), clasificando
+  cada palabra clave contra los anuncios reales de contexto (nunca
+  adivina un campo sin evidencia), y `/buscar` acepta esos mismos
+  parámetros (`brand`, `model`, `location`, `priceMin`, `priceMax`) para
+  que el comprador siga explorando y seleccionando anuncios ahí, no solo
+  los que el LLM mencione en su respuesta.

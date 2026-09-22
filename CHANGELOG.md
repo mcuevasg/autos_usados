@@ -544,6 +544,34 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   pidiendo más información cuando no hay match suficiente), probado
   tanto contra el Route Handler directo como con la interfaz completa
   en el navegador.
+- **T-29: Widget flotante del asistente y filtros de marca/modelo/
+  ubicación hacia `/buscar`.** Dos mejoras pedidas tras la primera
+  entrega del Asistente de Compra con IA. (1) El acceso al chat pasó de
+  un link "Asistente" en el header a un widget flotante
+  (`app/components/chat-flotante.tsx`): un botón circular fijo en la
+  esquina inferior derecha, visible en cualquier página del sitio (no
+  solo en `/asistente`), que despliega el mismo `ChatAsistente` en un
+  panel compacto con encabezado y botón de cerrar; `/asistente` sigue
+  existiendo igual para quien llega por link directo. (2) Los filtros
+  que el asistente ofrece hacia `/buscar` -antes solo un rango de
+  precio- ahora también incluyen marca, modelo y ubicación: la nueva
+  función `inferirFiltrosCatalogo` (`lib/asistente-contexto.ts`)
+  clasifica cada palabra clave del mensaje del comprador comparándola
+  contra los anuncios REALES ya consultados como contexto para el LLM
+  (sin ninguna consulta adicional a la base), así nunca asigna un campo
+  sin evidencia en el catálogo -algo importante porque `/buscar` aplica
+  sus filtros con AND entre sí, así que asignar por error una palabra
+  al campo equivocado (ej. una ciudad a `brand`) devolvería cero
+  resultados. `app/buscar/page.tsx` ahora acepta `priceMin`/`priceMax`
+  en la URL además de los filtros existentes, con sus propios campos
+  "Precio mínimo"/"Precio máximo" en el formulario. De paso se corrigió
+  un bug real encontrado en el camino: la clasificación no reconocía
+  ubicaciones con tilde (ej. "Concepción") porque la palabra clave
+  llega normalizada sin tildes y no se comparaba contra el mismo
+  formato; ahora ambos lados se normalizan igual (`sinTildes`). 15
+  tests nuevos; verificado en el navegador con Playwright que el flujo
+  completo funciona: mensaje con marca+modelo+ubicación → link con los
+  3 filtros → `/buscar` muestra exactamente el anuncio real esperado.
 
 ### Corregido
 

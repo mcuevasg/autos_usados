@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { SiteHeader } from "./components/site-header";
+import { ChatFlotante } from "./components/chat-flotante";
 import "./globals.css";
 
 /**
@@ -64,6 +65,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
          * para que todas las páginas lo compartan sin repetirlo. */}
         <SiteHeader />
         {children}
+        {/* Widget flotante del Asistente de Compra (T-29): aparece en
+         * cualquier página, no solo en /asistente. Ver
+         * app/components/chat-flotante.tsx. */}
+        <ChatFlotante />
       </body>
     </html>
   );

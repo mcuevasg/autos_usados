@@ -73,6 +73,100 @@ describe("ChatAsistente", () => {
     );
   });
 
+  it("cuando la respuesta trae un rango de precio, muestra un link a /buscar con esos filtros", async () => {
+    const usuario = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          message: {
+            role: "assistant",
+            content: "Tengo varios autos en ese rango.",
+          },
+          anuncios: [],
+          filtros: { priceMin: 5_000_000, priceMax: 10_000_000 },
+        }),
+      })
+    );
+
+    render(<ChatAsistente />);
+
+    const input = screen.getByLabelText(/escribe qué auto buscas/i);
+    await usuario.type(input, "autos entre 5 y 10 millones");
+    await usuario.click(screen.getByRole("button", { name: /enviar/i }));
+
+    const link = await screen.findByRole("link", {
+      name: /ver resultados en buscar/i,
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "/buscar?priceMin=5000000&priceMax=10000000"
+    );
+    expect(link).toHaveTextContent(
+      "entre $5.000.000 y $10.000.000"
+    );
+  });
+
+  it("cuando la respuesta trae marca, modelo y ubicación, arma el link con esos tres filtros", async () => {
+    const usuario = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          message: {
+            role: "assistant",
+            content: "Tengo un Toyota Yaris en Santiago.",
+          },
+          anuncios: [],
+          filtros: { brand: "Toyota", model: "Yaris", location: "Santiago" },
+        }),
+      })
+    );
+
+    render(<ChatAsistente />);
+
+    const input = screen.getByLabelText(/escribe qué auto buscas/i);
+    await usuario.type(input, "busco un Toyota Yaris en Santiago");
+    await usuario.click(screen.getByRole("button", { name: /enviar/i }));
+
+    const link = await screen.findByRole("link", {
+      name: /ver resultados en buscar/i,
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "/buscar?brand=Toyota&model=Yaris&location=Santiago"
+    );
+    expect(link).toHaveTextContent("Toyota Yaris, en Santiago");
+  });
+
+  it("cuando la respuesta no trae ningún filtro, no muestra el link a /buscar", async () => {
+    const usuario = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          message: { role: "assistant", content: "¿Qué auto buscas?" },
+          anuncios: [],
+          filtros: {},
+        }),
+      })
+    );
+
+    render(<ChatAsistente />);
+
+    const input = screen.getByLabelText(/escribe qué auto buscas/i);
+    await usuario.type(input, "hola");
+    await usuario.click(screen.getByRole("button", { name: /enviar/i }));
+
+    await screen.findByText("¿Qué auto buscas?");
+    expect(
+      screen.queryByRole("link", { name: /ver resultados en buscar/i })
+    ).not.toBeInTheDocument();
+  });
+
   it("si el Route Handler responde error, muestra un mensaje de error claro sin romper el chat", async () => {
     const usuario = userEvent.setup();
     vi.stubGlobal(

@@ -11,6 +11,7 @@ import { NextRequest } from "next/server";
 vi.mock("@/lib/asistente-contexto", () => ({
   obtenerAnunciosContexto: vi.fn(),
   construirMensajeSistema: vi.fn(),
+  detectarFiltrosBuscar: vi.fn().mockReturnValue({}),
 }));
 
 vi.mock("@/lib/groq-chat", async () => {
@@ -29,6 +30,7 @@ vi.mock("@/lib/groq-chat", async () => {
 import {
   obtenerAnunciosContexto,
   construirMensajeSistema,
+  detectarFiltrosBuscar,
 } from "@/lib/asistente-contexto";
 import { llamarGroqChat, GroqChatError } from "@/lib/groq-chat";
 import { POST, validarMensajes } from "./route";
@@ -162,6 +164,48 @@ describe("POST /api/asistente/chat", () => {
     expect(datos.anuncios).toEqual([
       { id: ANUNCIO_TOYOTA.id, brand: "Toyota", model: "Yaris", year: 2020 },
     ]);
+  });
+
+  it("devuelve en 'filtros' lo que detecte detectarFiltrosBuscar, pasándole el último mensaje y los anuncios de contexto", async () => {
+    vi.mocked(obtenerAnunciosContexto).mockResolvedValue([ANUNCIO_TOYOTA]);
+    vi.mocked(llamarGroqChat).mockResolvedValue("¿Qué auto buscas?");
+    vi.mocked(detectarFiltrosBuscar).mockReturnValue({
+      brand: "Toyota",
+      priceMin: 5_000_000,
+      priceMax: 10_000_000,
+    });
+
+    const request = crearRequest({
+      messages: [{ role: "user", content: "Toyota entre 5 y 10 millones" }],
+    });
+
+    const response = await POST(request);
+    const datos = await response.json();
+
+    expect(detectarFiltrosBuscar).toHaveBeenCalledWith(
+      "Toyota entre 5 y 10 millones",
+      [ANUNCIO_TOYOTA]
+    );
+    expect(datos.filtros).toEqual({
+      brand: "Toyota",
+      priceMin: 5_000_000,
+      priceMax: 10_000_000,
+    });
+  });
+
+  it("sin filtros detectados, 'filtros' viene vacío", async () => {
+    vi.mocked(obtenerAnunciosContexto).mockResolvedValue([]);
+    vi.mocked(llamarGroqChat).mockResolvedValue("¿Qué auto buscas?");
+    vi.mocked(detectarFiltrosBuscar).mockReturnValue({});
+
+    const request = crearRequest({
+      messages: [{ role: "user", content: "hola" }],
+    });
+
+    const response = await POST(request);
+    const datos = await response.json();
+
+    expect(datos.filtros).toEqual({});
   });
 
   it("si obtenerAnunciosContexto falla, igual llama a Groq con contexto vacío (no rompe el chat)", async () => {
