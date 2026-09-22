@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 //
 // Test de componente (QA, T-29) para `ChatAsistente`: cubre el criterio de
-// aceptación "si falla la llamada al proveedor NVIDIA, el chat muestra un
+// aceptación "si falla la llamada al proveedor Groq, el chat muestra un
 // mensaje de error claro sin romper el resto de la página" desde el punto
 // de vista del cliente. Se mockea `fetch` global (nunca se llama al Route
-// Handler real ni a NVIDIA).
+// Handler real ni a Groq).
 
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -79,7 +79,7 @@ describe("ChatAsistente", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: false,
-        json: async () => ({ error: "El proveedor NVIDIA no respondió." }),
+        json: async () => ({ error: "El proveedor Groq no respondió." }),
       })
     );
 
@@ -91,7 +91,7 @@ describe("ChatAsistente", () => {
 
     expect(
       await screen.findByRole("alert")
-    ).toHaveTextContent("El proveedor NVIDIA no respondió.");
+    ).toHaveTextContent("El proveedor Groq no respondió.");
     // El input sigue disponible: el resto del chat no se rompió.
     expect(
       screen.getByLabelText(/escribe qué auto buscas/i)

@@ -56,9 +56,9 @@ Variables requeridas:
   las notificaciones por email. Mientras la cuenta Resend no tenga un
   dominio propio verificado, los correos de prueba solo se entregan a la
   casilla del dueño de la cuenta (limitación del proveedor en modo sandbox).
-- `NVIDIA_API_KEY`, `NVIDIA_API_ENDPOINT` y `NVIDIA_MODEL_ID`: credenciales
-  del modelo LLM de [NVIDIA NIM](https://build.nvidia.com) usado por el
-  Asistente de Compra con IA (`/asistente`).
+- `GROQ_API_KEY`, `GROQ_API_ENDPOINT` y `GROQ_MODEL_ID`: credenciales del
+  modelo LLM de [Groq](https://console.groq.com) usado por el Asistente de
+  Compra con IA (`/asistente`).
 
 `.env.local` no se versiona.
 
@@ -232,11 +232,14 @@ recomendando únicamente autos que realmente están publicados en el
 marketplace (nunca inventa anuncios que no existen), y avisa cuando no
 encuentra coincidencias.
 
-> **Nota:** al cierre de esta funcionalidad, la cuenta de NVIDIA configurada
-> responde `403 Authorization failed` al llamar al modelo (problema de
-> permisos/créditos de la cuenta, no del código); mientras eso no se
-> resuelva, el asistente muestra un mensaje de error claro en vez de una
-> respuesta del modelo.
+> **Nota:** T-29 se implementó originalmente contra NVIDIA NIM, pero esa
+> cuenta quedó bloqueada por un permiso de organización sin solución
+> self-service (`403 Authorization failed` en `/chat/completions`, no un
+> problema del código). Se migró a [Groq](https://console.groq.com), que
+> expone el mismo formato de API compatible con OpenAI y tiene un tier
+> gratuito sin ese bloqueo. Si la llamada al proveedor configurado falla
+> por cualquier motivo, el asistente muestra un mensaje de error claro en
+> vez de una respuesta del modelo.
 
 ## Tests
 

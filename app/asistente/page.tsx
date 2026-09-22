@@ -9,7 +9,7 @@ import { ChatAsistente } from "./chat";
  * `AsistentePage` NO es `async`, no lee `cookies()`/sesión ni
  * `searchParams` al tope: es un shell puramente estático que delega toda
  * la interacción a `ChatAsistente` (Client Component), que a su vez llama a
- * `POST /api/asistente/chat` -el único lugar que toca `NVIDIA_API_KEY`,
+ * `POST /api/asistente/chat` -el único lugar que toca `GROQ_API_KEY`,
  * exclusivamente server-side-. Por eso esta página no necesita
  * `export const instant = false` (a diferencia de `/buscar` o `/cuenta`,
  * T-28): puede prerenderizarse igual que la Home o `/login`.

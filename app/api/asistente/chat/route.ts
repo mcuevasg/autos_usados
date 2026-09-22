@@ -6,33 +6,33 @@ import {
   type AnuncioContexto,
 } from "@/lib/asistente-contexto";
 import {
-  llamarNvidiaChat,
-  NvidiaChatError,
+  llamarGroqChat,
+  GroqChatError,
   type ChatMessage,
-} from "@/lib/nvidia-chat";
+} from "@/lib/groq-chat";
 
 /**
  * Route Handler del Asistente de Compra con IA (T-29).
  *
  * Público (no requiere sesión, mismo criterio de visibilidad que
  * `/buscar`), por lo que valida el body con cuidado: es un endpoint sin
- * autenticación que dispara una llamada de pago a un proveedor externo
- * (NVIDIA), así que se limita tanto la cantidad de mensajes por
- * conversación como el largo de cada uno para acotar el costo/abuso.
+ * autenticación que dispara una llamada a un proveedor externo (Groq), así
+ * que se limita tanto la cantidad de mensajes por conversación como el
+ * largo de cada uno para acotar el costo/abuso.
  *
  * Flujo:
  * 1. Valida el body (`validarMensajes`).
  * 2. Consulta anuncios PUBLICADOS reales acotados al último mensaje del
  *    comprador (`obtenerAnunciosContexto`, lib/asistente-contexto.ts) para
  *    fundamentar la respuesta del LLM y evitar que invente autos.
- * 3. Arma el mensaje de sistema con esos anuncios y llama a NVIDIA
- *    (`llamarNvidiaChat`, lib/nvidia-chat.ts) -la única pieza de este
- *    módulo que toca `NVIDIA_API_KEY`, y solo server-side.
+ * 3. Arma el mensaje de sistema con esos anuncios y llama a Groq
+ *    (`llamarGroqChat`, lib/groq-chat.ts) -la única pieza de este módulo
+ *    que toca `GROQ_API_KEY`, y solo server-side.
  * 4. Si la consulta a Supabase falla, se sigue igual con contexto vacío (el
  *    mensaje de sistema ya le indica al modelo que, sin anuncios, debe
  *    decirlo en vez de inventar) en vez de romper el chat completo por un
  *    problema ajeno al proveedor de IA.
- * 5. Si la llamada a NVIDIA falla, responde 502 con un mensaje de error
+ * 5. Si la llamada a Groq falla, responde 502 con un mensaje de error
  *    claro (nunca deja escapar la excepción cruda ni tira abajo el
  *    handler).
  */
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
   };
 
   try {
-    const respuesta = await llamarNvidiaChat([mensajeSistema, ...mensajes]);
+    const respuesta = await llamarGroqChat([mensajeSistema, ...mensajes]);
 
     return NextResponse.json(
       {
@@ -176,10 +176,10 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (err) {
-    console.error("[asistente] Error al llamar al proveedor NVIDIA:", err);
+    console.error("[asistente] Error al llamar al proveedor Groq:", err);
 
     const mensajeError =
-      err instanceof NvidiaChatError
+      err instanceof GroqChatError
         ? err.message
         : "No se pudo conectar con el asistente. Intenta nuevamente en unos minutos.";
 

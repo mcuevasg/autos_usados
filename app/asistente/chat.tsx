@@ -10,7 +10,7 @@ import Link from "next/link";
  * Client Component: mantiene el historial de la conversación en estado de
  * React (sin persistir en base de datos, MVP) y llama al Route Handler
  * propio (`POST /api/asistente/chat`), que es el único lugar que toca
- * `NVIDIA_API_KEY` -esta pieza NUNCA llama directo al proveedor NVIDIA.
+ * `GROQ_API_KEY` -esta pieza NUNCA llama directo al proveedor Groq.
  *
  * Si la llamada al Route Handler falla o responde error, se muestra un
  * mensaje de error claro dentro del panel del chat (estado `error`, con

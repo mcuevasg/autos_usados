@@ -517,6 +517,33 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   real), el historial de conversación no se persiste, y no se agregó un
   link "Asistente" en el header global de navegación (queda como mejora
   futura de descubribilidad).
+- **T-29: Migración del Asistente de Compra con IA de NVIDIA a Groq
+  (deuda técnica resuelta).** La entrada anterior de T-29 documentó que
+  la cuenta NVIDIA configurada respondía `403 Authorization failed` en
+  el endpoint de inferencia por falta del permiso "Public API Endpoints"
+  en la organización personal -un bloqueo de cuenta confirmado con 3
+  modelos distintos y ampliamente reportado, sin solución self-service,
+  en los foros de NVIDIA. Se migró la integración a
+  [Groq](https://console.groq.com), que expone el mismo formato de API
+  de chat completions compatible con OpenAI y tiene un tier gratuito sin
+  ese bloqueo. Como la interfaz HTTP es idéntica, la migración fue un
+  cambio mecánico: `lib/nvidia-chat.ts` → `lib/groq-chat.ts`
+  (`NvidiaChatError` → `GroqChatError`, `llamarNvidiaChat` →
+  `llamarGroqChat`), variables de entorno `NVIDIA_API_KEY`/
+  `NVIDIA_API_ENDPOINT`/`NVIDIA_MODEL_ID` → `GROQ_API_KEY`/
+  `GROQ_API_ENDPOINT`/`GROQ_MODEL_ID` en `.env.local.example`, sin tocar
+  la lógica de negocio (validación de mensajes, contexto anti-
+  alucinación en `lib/asistente-contexto.ts`, manejo de errores). Los 40
+  tests existentes se actualizaron en paralelo con el mismo renombrado y
+  siguen pasando; `npm run build` y `npm run lint` sin errores nuevos.
+  A diferencia del cierre anterior, esta vez se verificó end-to-end con
+  una llamada real exitosa: tras descartar `llama-3.3-70b-versatile`
+  (descontinuado en el catálogo actual de Groq, confirmado consultando
+  `GET /models`) a favor de `openai/gpt-oss-20b`, el chat responde en
+  español recomendando únicamente anuncios reales del catálogo (o
+  pidiendo más información cuando no hay match suficiente), probado
+  tanto contra el Route Handler directo como con la interfaz completa
+  en el navegador.
 
 ### Corregido
 

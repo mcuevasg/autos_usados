@@ -1,7 +1,7 @@
 // Test (QA, T-29) de `app/api/asistente/chat/route.ts`: validación del body
 // (límites de cantidad/largo de mensajes, público y sin autenticación) y el
-// manejo de error cuando falla la llamada a NVIDIA, sin llamar a la API
-// real -se mockean `lib/asistente-contexto` y `lib/nvidia-chat` completos,
+// manejo de error cuando falla la llamada a Groq, sin llamar a la API
+// real -se mockean `lib/asistente-contexto` y `lib/groq-chat` completos,
 // mismo patrón que `app/auth/callback/route.test.ts` (`vi.mock` + import
 // del módulo real después del mock).
 
@@ -13,16 +13,16 @@ vi.mock("@/lib/asistente-contexto", () => ({
   construirMensajeSistema: vi.fn(),
 }));
 
-vi.mock("@/lib/nvidia-chat", async () => {
-  class NvidiaChatError extends Error {
+vi.mock("@/lib/groq-chat", async () => {
+  class GroqChatError extends Error {
     constructor(message: string) {
       super(message);
-      this.name = "NvidiaChatError";
+      this.name = "GroqChatError";
     }
   }
   return {
-    llamarNvidiaChat: vi.fn(),
-    NvidiaChatError,
+    llamarGroqChat: vi.fn(),
+    GroqChatError,
   };
 });
 
@@ -30,7 +30,7 @@ import {
   obtenerAnunciosContexto,
   construirMensajeSistema,
 } from "@/lib/asistente-contexto";
-import { llamarNvidiaChat, NvidiaChatError } from "@/lib/nvidia-chat";
+import { llamarGroqChat, GroqChatError } from "@/lib/groq-chat";
 import { POST, validarMensajes } from "./route";
 
 const ANUNCIO_TOYOTA = {
@@ -120,7 +120,7 @@ describe("POST /api/asistente/chat", () => {
     const response = await POST(request);
 
     expect(response.status).toBe(400);
-    expect(llamarNvidiaChat).not.toHaveBeenCalled();
+    expect(llamarGroqChat).not.toHaveBeenCalled();
   });
 
   it("responde 400 si 'messages' no cumple la validación", async () => {
@@ -131,12 +131,12 @@ describe("POST /api/asistente/chat", () => {
 
     expect(response.status).toBe(400);
     expect(datos.error).toBeTruthy();
-    expect(llamarNvidiaChat).not.toHaveBeenCalled();
+    expect(llamarGroqChat).not.toHaveBeenCalled();
   });
 
-  it("con mensajes válidos, consulta el contexto, llama a NVIDIA y devuelve la respuesta", async () => {
+  it("con mensajes válidos, consulta el contexto, llama a Groq y devuelve la respuesta", async () => {
     vi.mocked(obtenerAnunciosContexto).mockResolvedValue([ANUNCIO_TOYOTA]);
-    vi.mocked(llamarNvidiaChat).mockResolvedValue(
+    vi.mocked(llamarGroqChat).mockResolvedValue(
       "Te recomiendo el Toyota Yaris 2020 publicado en Santiago."
     );
 
@@ -151,7 +151,7 @@ describe("POST /api/asistente/chat", () => {
     expect(obtenerAnunciosContexto).toHaveBeenCalledWith(
       "busco un Toyota en Santiago"
     );
-    expect(llamarNvidiaChat).toHaveBeenCalledWith([
+    expect(llamarGroqChat).toHaveBeenCalledWith([
       { role: "system", content: "system prompt" },
       { role: "user", content: "busco un Toyota en Santiago" },
     ]);
@@ -164,11 +164,11 @@ describe("POST /api/asistente/chat", () => {
     ]);
   });
 
-  it("si obtenerAnunciosContexto falla, igual llama a NVIDIA con contexto vacío (no rompe el chat)", async () => {
+  it("si obtenerAnunciosContexto falla, igual llama a Groq con contexto vacío (no rompe el chat)", async () => {
     vi.mocked(obtenerAnunciosContexto).mockRejectedValue(
       new Error("supabase caído")
     );
-    vi.mocked(llamarNvidiaChat).mockResolvedValue("¿Qué auto buscas?");
+    vi.mocked(llamarGroqChat).mockResolvedValue("¿Qué auto buscas?");
 
     const request = crearRequest({
       messages: [{ role: "user", content: "hola" }],
@@ -182,11 +182,11 @@ describe("POST /api/asistente/chat", () => {
     expect(construirMensajeSistema).toHaveBeenCalledWith([]);
   });
 
-  it("si NVIDIA falla con NvidiaChatError, responde 502 con el mensaje claro del error", async () => {
+  it("si Groq falla con GroqChatError, responde 502 con el mensaje claro del error", async () => {
     vi.mocked(obtenerAnunciosContexto).mockResolvedValue([]);
-    vi.mocked(llamarNvidiaChat).mockRejectedValue(
-      new NvidiaChatError(
-        "El proveedor NVIDIA respondió con un error (status 500)."
+    vi.mocked(llamarGroqChat).mockRejectedValue(
+      new GroqChatError(
+        "El proveedor Groq respondió con un error (status 500)."
       )
     );
 
@@ -198,12 +198,12 @@ describe("POST /api/asistente/chat", () => {
     const datos = await response.json();
 
     expect(response.status).toBe(502);
-    expect(datos.error).toMatch(/NVIDIA respondió con un error/);
+    expect(datos.error).toMatch(/Groq respondió con un error/);
   });
 
-  it("si NVIDIA falla con un error inesperado (no NvidiaChatError), responde 502 con un mensaje genérico", async () => {
+  it("si Groq falla con un error inesperado (no GroqChatError), responde 502 con un mensaje genérico", async () => {
     vi.mocked(obtenerAnunciosContexto).mockResolvedValue([]);
-    vi.mocked(llamarNvidiaChat).mockRejectedValue(new Error("boom interno"));
+    vi.mocked(llamarGroqChat).mockRejectedValue(new Error("boom interno"));
 
     const request = crearRequest({
       messages: [{ role: "user", content: "hola" }],
