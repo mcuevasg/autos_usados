@@ -139,6 +139,10 @@ function agruparPorSimilitud(anuncios: Anuncio[]): GrupoComparativo[] {
  * `id` y `seller_type`, para mostrar únicamente el TIPO de vendedor
  * (persona natural / concesionario) junto a cada anuncio.
  */
+// T-28 (spike cacheComponents): lee `searchParams` y datos al tope sin
+// Suspense. Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function BuscarPage({
   searchParams,
 }: {

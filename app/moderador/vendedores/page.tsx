@@ -33,6 +33,10 @@ type SellerPendiente = {
  * (0006_moderator_seller_review.sql) ya permiten este acceso a un
  * moderador.
  */
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function ModeradorVendedoresPage() {
   const supabase = await createSupabaseServerClient();
 

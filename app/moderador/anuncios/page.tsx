@@ -66,6 +66,10 @@ type SellerBasico = {
  * si esta página tuviera un error, ningún vendedor podría cambiar el
  * estado de su propio anuncio saltándose a un moderador.
  */
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function ModeradorAnunciosPage() {
   const supabase = await createSupabaseServerClient();
 

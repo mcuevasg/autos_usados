@@ -72,6 +72,10 @@ type AnuncioResumen = {
  * RLS, porque `listings_select_published` (0002_rls_policies.sql) permite
  * a cualquier usuario autenticado leer anuncios publicados ajenos.
  */
+// T-28 (spike cacheComponents): lee `params` y sesión al tope sin
+// Suspense. Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function AnuncioCreadoPage({
   params,
 }: {

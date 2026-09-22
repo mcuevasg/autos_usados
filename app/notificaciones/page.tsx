@@ -36,6 +36,10 @@ const ETIQUETAS_EVENTO: Record<string, string> = {
  * `lib/notifications.ts`) al ocurrir los eventos correspondientes: no hay
  * ninguna acción de creación en esta página.
  */
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function NotificacionesPage() {
   const supabase = await createSupabaseServerClient();
 

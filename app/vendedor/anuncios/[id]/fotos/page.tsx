@@ -42,6 +42,10 @@ type AnuncioBasico = {
  * (0009_listing_photos_storage_and_minimum.sql), que se disparará cuando
  * exista una acción real de "publicar" (T-12, todavía no implementada).
  */
+// T-28 (spike cacheComponents): lee `params` y sesión al tope sin
+// Suspense. Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function FotosAnuncioPage({
   params,
 }: {

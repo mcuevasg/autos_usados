@@ -14,6 +14,10 @@ import { supabase } from "@/lib/supabase/client";
  * de red. Eso hacía que este endpoint respondiera `ok:true` siempre,
  * incluso con URL/key inválidas o un proyecto inexistente/pausado.
  */
+// T-28 (spike cacheComponents): route handler que consulta Supabase en
+// cada request (health check), no debe prerenderizarse como estático.
+export const instant = false;
+
 export async function GET() {
   const { error } = await supabase.storage.listBuckets();
 

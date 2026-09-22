@@ -430,6 +430,50 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
   global persistente (T-23), landing seductora (T-24), cards visuales
   de búsqueda (T-25), página de detalle de anuncio (T-26) y este pulido
   final de micro-interacciones y responsive (T-27).
+- **T-28: Partial Prerendering para recuperar rutas estáticas (cierra la
+  deuda técnica dejada pendiente en T-23).** T-23 había detectado que
+  resolver la sesión del usuario en el header compartido por todas las
+  páginas (`app/layout.tsx`) forzaba a que todas las rutas del sitio
+  quedaran dinámicas en el build, incluidas la home (`/`), `/login` y
+  `/registro`, que antes se servían estáticas; T-23 mitigó parcialmente
+  con streaming (`<Suspense>`), pero el build seguía sin poder marcar
+  esas rutas como estáticas. Se evaluó e implementó la solución de raíz:
+  se habilitó `cacheComponents: true` en `next.config.ts` (Partial
+  Prerendering de Next.js 16, que pre-genera un shell estático de cada
+  ruta y streamea en runtime solo la parte dinámica). Como la mayoría de
+  las páginas del sitio todavía leen sesión/`searchParams`/`params` de
+  Supabase al tope del componente, sin pasar por un `<Suspense>` (patrón
+  previo al introducido en T-23/T-24), se aplicó la ruta de "adopción
+  incremental" documentada por Next.js: se agregó
+  `export const instant = false;` (con un comentario que explica el
+  motivo) a las 13 páginas y 2 route handlers que aún no siguen el
+  patrón Suspense: `app/cuenta/page.tsx`, `app/notificaciones/page.tsx`,
+  `app/buscar/page.tsx`, `app/anuncio/[id]/page.tsx`,
+  `app/moderador/vendedores/page.tsx`, `app/moderador/anuncios/page.tsx`,
+  `app/moderador/ventas/page.tsx`, `app/vendedor/registro/page.tsx`,
+  `app/vendedor/anuncios/[id]/page.tsx`,
+  `app/vendedor/anuncios/[id]/fotos/page.tsx`,
+  `app/vendedor/anuncios/[id]/venta/page.tsx`,
+  `app/vendedor/anuncios/nuevo/page.tsx`,
+  `app/api/health/supabase/route.ts` y `app/auth/callback/route.ts`. Se
+  verificó con un build limpio (`rm -rf .next && npm run build`) que `/`,
+  `/login` y `/registro` volvieron a prerenderizarse con shell estático +
+  streaming ("Partial Prerender") en vez de quedar puramente dinámicas;
+  `/buscar`, `/anuncio/[id]` y las tres sub-rutas de
+  `/vendedor/anuncios/[id]/...` obtuvieron el mismo beneficio como mejora
+  adicional, no exigida por la tarea. Las rutas que además redirigen
+  condicionadas a sesión (`/cuenta`, `/moderador/*`, `/notificaciones`,
+  `/vendedor/registro`, `/vendedor/anuncios/nuevo`) y los 2 route
+  handlers se mantienen dinámicas como antes, sin regresión, con
+  `instant = false` dejando documentada explícitamente esa deuda técnica
+  como candidata a una tarea futura: convertirlas al patrón Suspense
+  completo, empezando por `/buscar` por ser la más simple. No se
+  modificó ninguna lógica de negocio; el diff es mínimo (15 archivos,
+  solo líneas agregadas). Se verificaron `npm test` y `npm run lint` sin
+  regresiones nuevas (las únicas fallas presentes ya existían antes de
+  esta tarea: *rate limiting* de red contra Supabase Auth real en tests
+  de integración, y 4 errores de lint preexistentes en
+  `app/auth/callback/route.test.ts`, archivo no tocado por este cambio).
 
 ### Corregido
 

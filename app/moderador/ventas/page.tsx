@@ -42,6 +42,10 @@ type AnuncioBasico = {
  * se calcula en servidor y el anuncio pasa a 'vendido'; esta página no
  * hace ningún cálculo, solo muestra los datos.
  */
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function ModeradorVentasPage() {
   const supabase = await createSupabaseServerClient();
 

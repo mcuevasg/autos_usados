@@ -13,6 +13,10 @@ const ETIQUETAS_TIPO: Record<string, string> = {
   concesionario: "Concesionario",
 };
 
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function VendedorRegistroPage() {
   const supabase = await createSupabaseServerClient();
 

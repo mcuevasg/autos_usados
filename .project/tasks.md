@@ -314,7 +314,7 @@ micro-animaciones con propósito, mobile-first).
 ### T-28: Evaluar habilitar Partial Prerendering (PPR / Cache Components)
 
 - **Depende de:** T-23
-- **Estado:** Pendiente
+- **Estado:** Completed
 - **Contexto:** T-23 detectó que resolver la sesión del usuario en el
   header (necesario en todas las páginas) hace que Next.js marque
   TODAS las rutas del sitio como dinámicas en el build, incluso

@@ -3,6 +3,12 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "./actions";
 
+// T-28 (spike cacheComponents): esta página lee sesión/datos al tope del
+// componente sin Suspense (patrón previo a T-23/T-24). Se deja `instant =
+// false` para permitir el build mientras se decide si vale la pena
+// convertirla al patrón Suspense en una tarea futura.
+export const instant = false;
+
 export default async function CuentaPage() {
   const supabase = await createSupabaseServerClient();
 

@@ -9,6 +9,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  * @query {string} code - Código de verificación de Supabase Auth
  * @returns Redirige a /cuenta si es exitoso, o a /login con error si falla
  */
+// T-28 (spike cacheComponents): route handler que lee `searchParams`/
+// código de OAuth y crea sesión; no debe prerenderizarse como estático.
+export const instant = false;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code")?.trim() || null;

@@ -22,6 +22,10 @@ import { AnuncioForm } from "./anuncio-form";
  * impide el insert a nivel de base de datos si el seller no está
  * verificado.
  */
+// T-28 (spike cacheComponents): lee sesión/datos al tope sin Suspense.
+// Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function NuevoAnuncioPage() {
   const supabase = await createSupabaseServerClient();
 

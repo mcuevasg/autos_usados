@@ -55,6 +55,10 @@ type SolicitudVenta = {
  * mensaje explicando la situación en vez del formulario, evitando
  * solicitudes duplicadas.
  */
+// T-28 (spike cacheComponents): lee `params` y sesión al tope sin
+// Suspense. Ver nota en app/cuenta/page.tsx.
+export const instant = false;
+
 export default async function SolicitarVentaPage({
   params,
 }: {
